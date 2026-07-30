@@ -12,8 +12,8 @@ import Link from "next/link";
 
 export default function SiteFooter() {
   return (
-    <footer id="contact" className="bg-[#1b2748] px-5 pt-14 text-white">
-      <div className="mx-auto grid w-full gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-4 lg:px-8 xl:px-12">
+    <footer id="contact" className="bg-[#1b2748] pt-14 text-white">
+      <div className="container grid gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <Logo inverse />
           <p className="mt-5 max-w-xs text-sm leading-6 text-slate-300">
@@ -79,7 +79,7 @@ export default function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-white/15 py-6">
-        <div className="mx-auto flex w-full flex-col gap-3 text-center text-xs text-slate-400 sm:flex-row sm:justify-between lg:px-8 xl:px-12">
+        <div className="container flex flex-col gap-3 text-center text-xs text-slate-400 sm:flex-row sm:justify-between">
           <p>© 2025 GearUp. All rights reserved.</p>
           <p>Privacy Policy &nbsp; · &nbsp; Terms of Service</p>
         </div>

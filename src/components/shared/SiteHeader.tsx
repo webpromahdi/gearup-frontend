@@ -12,7 +12,7 @@ interface SiteHeaderProps {
 export default function SiteHeader({ user }: SiteHeaderProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 shadow-[0_1px_8px_rgba(0,0,0,0.08)] backdrop-blur">
-      <div className="mx-auto flex h-[70px] w-full items-center justify-between px-5 lg:px-8 xl:px-12">
+      <div className="container flex h-[70px] items-center justify-between">
         {/* Logo */}
         <Link href="/" aria-label="GearUp home">
           <Logo />
