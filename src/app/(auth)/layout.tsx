@@ -5,7 +5,7 @@ interface AuthLayoutProps {
   children: ReactNode;
 }
 
-export default async function AuthLayout({ children }: AuthLayoutProps) {
+const AuthLayout = async ({ children }: AuthLayoutProps) => {
   return (
     <div className="min-h-screen bg-white font-[Inter] text-[#1a1a2e]">
       <main className="grid lg:grid-cols-2">
@@ -16,4 +16,6 @@ export default async function AuthLayout({ children }: AuthLayoutProps) {
       </main>
     </div>
   );
-}
+};
+
+export default AuthLayout;

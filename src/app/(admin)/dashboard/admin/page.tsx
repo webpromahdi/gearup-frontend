@@ -1,7 +1,7 @@
-const AdminDashboardPage = () => {
-  return (
-    <div>AdminDashboardPage</div>
-  );
-};
+import AdminDashboardPage from "@/app/(admin)/_components/AdminDashboardPage";
 
-export default AdminDashboardPage;
+const Page = () => {
+  return <AdminDashboardPage />;
+}
+
+export default Page;

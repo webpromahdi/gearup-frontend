@@ -1,7 +1,7 @@
-const AdminUsersPage = () => {
-  return (
-    <div>AdminUsersPage</div>
-  );
-};
+import AdminUsersPage from "@/app/(admin)/_components/AdminUsersPage";
 
-export default AdminUsersPage;
+const Page = () => {
+  return <AdminUsersPage />;
+}
+
+export default Page;

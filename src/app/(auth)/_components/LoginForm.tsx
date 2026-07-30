@@ -10,7 +10,7 @@ import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { loginAction } from "../_actions/AuthActions";
 
-export default function LoginForm() {
+const LoginForm = () => {
   const [state, formAction, isPending] = useActionState(loginAction, null);
 
   useEffect(() => {
@@ -67,3 +67,5 @@ export default function LoginForm() {
     </form>
   );
 }
+
+export default LoginForm;

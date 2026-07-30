@@ -1,7 +1,7 @@
-const AdminGearPage = () => {
-  return (
-    <div>AdminGearPage</div>
-  );
-};
+import AdminGearPage from "@/app/(admin)/_components/AdminGearPage";
 
-export default AdminGearPage;
+const Page = () => {
+  return <AdminGearPage />;
+}
+
+export default Page;

@@ -10,7 +10,7 @@ import {
 import Logo from "./Logo";
 import Link from "next/link";
 
-export default function SiteFooter() {
+const SiteFooter = () => {
   return (
     <footer id="contact" className="bg-[#1b2748] pt-14 text-white">
       <div className="container grid gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-4">
@@ -87,3 +87,5 @@ export default function SiteFooter() {
     </footer>
   );
 }
+
+export default SiteFooter;

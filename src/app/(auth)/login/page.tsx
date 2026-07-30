@@ -3,7 +3,7 @@ import Link from "next/link";
 import { GoogleButton } from "../_components/GoogleButton";
 import LoginForm from "../_components/LoginForm";
 
-export default function LoginPage() {
+const LoginPage = () => {
   return (
     <div className="w-full max-w-md">
       <div className="text-center">
@@ -46,3 +46,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+export default LoginPage;

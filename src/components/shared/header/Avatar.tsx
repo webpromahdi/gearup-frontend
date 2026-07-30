@@ -8,7 +8,7 @@ interface AvatarProps {
   size?: "sm" | "md";
 }
 
-export function Avatar({ user, size = "md" }: AvatarProps) {
+export const Avatar = ({ user, size = "md" }: AvatarProps) => {
   const dimensions = size === "sm" ? "size-9" : "size-11";
 
   if (user.image) {

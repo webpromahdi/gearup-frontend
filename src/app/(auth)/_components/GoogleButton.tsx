@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 
-export function GoogleButton({ register = false }: { register?: boolean }) {
+export const GoogleButton = ({ register = false }: { register?: boolean }) => {
   return (
     <Button
       type="button"
@@ -12,4 +12,4 @@ export function GoogleButton({ register = false }: { register?: boolean }) {
       {register ? "Sign up with Google" : "Continue with Google"}
     </Button>
   );
-}
+};

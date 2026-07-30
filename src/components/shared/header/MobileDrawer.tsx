@@ -21,7 +21,7 @@ interface MobileDrawerProps {
   user?: HeaderUser;
 }
 
-export function MobileDrawer({ user }: MobileDrawerProps) {
+export const MobileDrawer = ({ user }: MobileDrawerProps) => {
   const router = useRouter();
 
   const handleLogout = async () => {

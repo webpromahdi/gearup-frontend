@@ -7,7 +7,7 @@ export const metadata = {
   title: "My Profile | GearUp",
 };
 
-export default async function ProfilePage() {
+const ProfilePage = async () => {
   const result = await getMe();
 
   if (!result || !result.success) {
@@ -35,4 +35,6 @@ export default async function ProfilePage() {
       </div>
     </div>
   );
-}
+};
+
+export default ProfilePage;

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Mail, Calendar, CircleUserRound, Pencil } from "lucide-react";
 
-export function ProfileCard({ user }: { user: any }) {
+export const ProfileCard = ({ user }: { user: any }) => {
   const joinedDate = new Date(user.createdAt).toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",

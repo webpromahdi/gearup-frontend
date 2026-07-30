@@ -1,7 +1,6 @@
-import type React from "react";
 const brandLogo = "/gearup-logo.png";
 
-export default function Logo({ inverse = false }: { inverse?: boolean }) {
+const Logo = ({ inverse = false }: { inverse?: boolean }) => {
   return (
     <img
       src={brandLogo}
@@ -9,4 +8,6 @@ export default function Logo({ inverse = false }: { inverse?: boolean }) {
       className={`h-auto w-[132px] object-contain ${inverse ? "brightness-0 invert" : ""}`}
     />
   );
-}
+};
+
+export default Logo;

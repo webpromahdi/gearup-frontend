@@ -18,7 +18,7 @@ const PASSWORD_RULES = [
   { label: "One special symbol", test: (p: string) => /[^A-Za-z0-9]/.test(p) },
 ];
 
-function getStrengthBar(password: string) {
+const getStrengthBar = (password: string) => {
   const passed = PASSWORD_RULES.filter((r) => r.test(password)).length;
   const percent = (passed / PASSWORD_RULES.length) * 100;
   const colors = [
@@ -46,7 +46,7 @@ function getStrengthBar(password: string) {
   };
 }
 
-export default function RegisterForm() {
+const RegisterForm = () => {
   const [state, formAction, isPending] = useActionState(registerAction, null);
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("CUSTOMER");
@@ -253,3 +253,5 @@ export default function RegisterForm() {
     </form>
   );
 }
+
+export default RegisterForm;

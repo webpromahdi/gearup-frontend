@@ -14,13 +14,13 @@ import {
   LockKeyhole,
 } from "lucide-react";
 
-export function ProfileOverview({
+export const ProfileOverview = ({
   profile,
   user,
 }: {
   profile: any;
   user: any;
-}) {
+}) => {
   const memberSince = new Date(user.createdAt).toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",

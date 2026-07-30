@@ -3,11 +3,11 @@ import SiteHeader from "@/components/shared/SiteHeader";
 import SiteFooter from "@/components/shared/SiteFooter";
 import { getHeaderUser } from "@/lib/getHeaderUser";
 
-export default async function PublicLayout({
+const PublicLayout = async ({
   children,
 }: {
   children: ReactNode;
-}) {
+}) => {
   const user = await getHeaderUser();
 
   return (
@@ -17,4 +17,6 @@ export default async function PublicLayout({
       <SiteFooter />
     </div>
   );
-}
+};
+
+export default PublicLayout;

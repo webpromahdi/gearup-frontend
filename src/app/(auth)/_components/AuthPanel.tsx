@@ -2,7 +2,7 @@ import Logo from "@/components/shared/Logo";
 import { CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 
-export function AuthPanel({ register = false }: { register?: boolean }) {
+export const AuthPanel = ({ register = false }: { register?: boolean }) => {
   const title = register
     ? "Join GearUp Today"
     : "Your Next Adventure Starts Here";
@@ -62,4 +62,4 @@ export function AuthPanel({ register = false }: { register?: boolean }) {
       </div>
     </aside>
   );
-}
+};

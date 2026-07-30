@@ -3,7 +3,7 @@ import { GoogleButton } from "../_components/GoogleButton";
 import RegisterForm from "../_components/RegisterForm";
 import Link from "next/link";
 
-export default function RegisterPage() {
+const RegisterPage = () => {
   return (
     <div className="w-full max-w-md">
       <div className="text-center">
@@ -36,3 +36,5 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+export default RegisterPage;

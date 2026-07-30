@@ -18,7 +18,7 @@ import type { HeaderUser } from "./types";
 
 //Guest Actions
 
-export function GuestActions({ mobile = false }: { mobile?: boolean }) {
+export const GuestActions = ({ mobile = false }: { mobile?: boolean }) => {
   if (mobile) {
     return (
       <div className="grid gap-3">
@@ -58,7 +58,7 @@ export function GuestActions({ mobile = false }: { mobile?: boolean }) {
 
 //Desktop Account Dropdown
 
-export function UserMenu({ user }: { user: HeaderUser }) {
+export const UserMenu = ({ user }: { user: HeaderUser }) => {
   const links = accountLinks[user.role];
   const router = useRouter();
 
@@ -121,4 +121,4 @@ export function UserMenu({ user }: { user: HeaderUser }) {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+};

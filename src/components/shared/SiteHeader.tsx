@@ -9,7 +9,7 @@ interface SiteHeaderProps {
   user?: HeaderUser;
 }
 
-export default function SiteHeader({ user }: SiteHeaderProps) {
+const SiteHeader = ({ user }: SiteHeaderProps) => {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 shadow-[0_1px_8px_rgba(0,0,0,0.08)] backdrop-blur">
       <div className="container flex h-[70px] items-center justify-between">
@@ -49,3 +49,5 @@ export default function SiteHeader({ user }: SiteHeaderProps) {
     </header>
   );
 }
+
+export default SiteHeader;

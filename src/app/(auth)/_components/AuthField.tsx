@@ -1,11 +1,10 @@
 "use client";
-
 import React from "react";
 import { AtSign, Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
-export function Field({
+export const Field = ({
   label,
   name,
   icon: Icon,
@@ -21,7 +20,7 @@ export function Field({
   type?: string;
   suffix?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}) {
+}) => {
   const id = label.toLowerCase().replaceAll(" ", "-");
   const [showPassword, setShowPassword] = useState(false);
   return (
