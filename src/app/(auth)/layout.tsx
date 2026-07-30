@@ -3,15 +3,18 @@ import type { ReactNode } from "react";
 import SiteHeader from "@/components/shared/SiteHeader";
 import SiteFooter from "@/components/shared/SiteFooter";
 import { AuthPanel } from "./_components/AuthPanel";
+import { getHeaderUser } from "@/lib/getHeaderUser";
 
 interface AuthLayoutProps {
   children: ReactNode;
 }
 
-export default function AuthLayout({ children }: AuthLayoutProps) {
+export default async function AuthLayout({ children }: AuthLayoutProps) {
+  const user = await getHeaderUser();
+
   return (
     <div className="min-h-screen bg-white font-[Inter] text-[#1a1a2e]">
-      <SiteHeader />
+      <SiteHeader user={user} />
 
       <main className="grid lg:grid-cols-2">
         <AuthPanel />

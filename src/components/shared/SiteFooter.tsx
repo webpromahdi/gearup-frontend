@@ -1,4 +1,3 @@
-import type React from "react";
 import {
   Share2,
   Camera,
@@ -9,6 +8,7 @@ import {
   Mail,
 } from "lucide-react";
 import Logo from "./Logo";
+import Link from "next/link";
 
 export default function SiteFooter() {
   return (
@@ -21,13 +21,13 @@ export default function SiteFooter() {
           </p>
           <div className="mt-6 flex gap-3">
             {[Share2, Camera, MessageCircle, Video].map((Icon, index) => (
-              <a
+              <Link
                 key={index}
                 href="#contact"
                 className="flex size-9 items-center justify-center rounded-full bg-white/10 text-red-300 hover:bg-[#e31824] hover:text-white"
               >
                 <Icon className="size-4" />
-              </a>
+              </Link>
             ))}
           </div>
         </div>
@@ -37,13 +37,13 @@ export default function SiteFooter() {
           </h3>
           <ul className="mt-5 space-y-3 text-sm text-slate-300">
             <li>
-              <a href="/gear">Browse Gear</a>
+              <Link href="/gear">Browse Gear</Link>
             </li>
             <li>
-              <a href="/#how-it-works">How It Works</a>
+              <Link href="/#how-it-works">How It Works</Link>
             </li>
             <li>
-              <a href="/#about-us">About Us</a>
+              <Link href="/#about-us">About Us</Link>
             </li>
           </ul>
         </div>

@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { registerAction } from "../_actions/AuthActions";
 import { Field } from "./AuthField";
+import Link from "next/link";
 
 // Password Strength Logic
 const PASSWORD_RULES = [
@@ -110,32 +111,6 @@ export default function RegisterForm() {
                 {strength.label}
               </span>
             </div>
-
-            {/* Requirements */}
-            <ul className="space-y-1">
-              {PASSWORD_RULES.map((rule) => {
-                const met = rule.test(password);
-                return (
-                  <li
-                    key={rule.label}
-                    className={`flex items-center gap-1.5 text-[11px] font-medium transition-colors ${
-                      met ? "text-emerald-600" : "text-slate-400"
-                    }`}
-                  >
-                    <span
-                      className={`inline-flex size-3.5 items-center justify-center rounded-full text-[9px] ${
-                        met
-                          ? "bg-emerald-500 text-white"
-                          : "bg-slate-200 text-slate-400"
-                      }`}
-                    >
-                      {met ? "✓" : "✗"}
-                    </span>
-                    {rule.label}
-                  </li>
-                );
-              })}
-            </ul>
           </div>
         )}
 
@@ -245,19 +220,19 @@ export default function RegisterForm() {
         />
         <span>
           I agree to the{" "}
-          <a
+          <Link
             href="/terms"
             className="font-semibold text-[#e31824] hover:underline"
           >
             Terms of Service
-          </a>{" "}
+          </Link>{" "}
           and{" "}
-          <a
+          <Link
             href="/privacy"
             className="font-semibold text-[#e31824] hover:underline"
           >
             Privacy Policy
-          </a>
+          </Link>
         </span>
       </label>
       {state?.errors?.acceptTerms && (

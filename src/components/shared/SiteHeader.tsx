@@ -1,61 +1,50 @@
-import type React from "react";
-import { Menu } from "lucide-react";
+import Link from "next/link";
 import Logo from "./Logo";
-import { Button } from "@/components/ui/button";
+import { MobileDrawer } from "./header/MobileDrawer";
+import { GuestActions, UserMenu } from "./header/UserMenu";
+import { guestLinks } from "./header/nav-links";
+import type { HeaderUser } from "./header/types";
 
-export default function SiteHeader() {
+interface SiteHeaderProps {
+  user?: HeaderUser;
+}
+
+export default function SiteHeader({ user }: SiteHeaderProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 shadow-[0_1px_8px_rgba(0,0,0,0.08)] backdrop-blur">
       <div className="mx-auto flex h-[70px] w-full items-center justify-between px-5 lg:px-8 xl:px-12">
-        <a href="/" aria-label="GearUp home">
+        {/* Logo */}
+        <Link href="/" aria-label="GearUp home">
           <Logo />
-        </a>
-        <nav className="hidden items-center gap-7 lg:flex">
-          <a
-            href="/"
-            className="text-sm font-semibold text-[#1a1a2e] hover:text-[#e31824]"
-          >
-            Home
-          </a>
-          <a href="/gear" className="text-sm font-semibold text-[#e31824]">
-            Browse Gear
-          </a>
-          <a
-            href="/#categories"
-            className="text-sm font-semibold text-[#1a1a2e] hover:text-[#e31824]"
-          >
-            Categories
-          </a>
-          <a
-            href="/#about-us"
-            className="text-sm font-semibold text-[#1a1a2e] hover:text-[#e31824]"
-          >
-            About Us
-          </a>
-          <a
-            href="/#contact"
-            className="text-sm font-semibold text-[#1a1a2e] hover:text-[#e31824]"
-          >
-            Contact
-          </a>
+        </Link>
+
+        {/* Desktop Nav */}
+        <nav
+          aria-label="Primary navigation"
+          className="hidden items-center gap-7 lg:flex"
+        >
+          {guestLinks.map(({ label, href }) => (
+            <Link
+              key={label}
+              href={href}
+              className={`text-sm font-semibold transition-colors hover:text-[#e31824] ${
+                label === "Browse Gear" ? "text-[#e31824]" : "text-[#1a1a2e]"
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
         </nav>
-        <div className="hidden items-center gap-6 sm:flex">
-          <a
-            href="/login"
-            className="text-sm font-bold text-[#1a1a2e] hover:text-[#e31824]"
-          >
-            Log In
-          </a>
-          <a
-            href="/register"
-            className="rounded-lg bg-[#e31824] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#c41520]"
-          >
-            Sign Up
-          </a>
+
+        {/* Desktop Right Actions */}
+        <div className="hidden items-center sm:flex">
+          {user ? <UserMenu user={user} /> : <GuestActions />}
         </div>
-        <a href="/gear" className="sm:hidden">
-          <Menu className="size-6 text-[#1b2748]" />
-        </a>
+
+        {/* Mobile Hamburger / Drawer */}
+        <div className="sm:hidden">
+          <MobileDrawer user={user} />
+        </div>
       </div>
     </header>
   );

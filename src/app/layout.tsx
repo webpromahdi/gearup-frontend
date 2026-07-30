@@ -29,6 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={cn(
         "h-full",
         "antialiased",
@@ -38,7 +39,10 @@ export default function RootLayout({
         inter.variable,
       )}
     >
-      <body className="min-h-full flex flex-col overflow-x-hidden">
+      <body
+        suppressHydrationWarning
+        className="min-h-full flex flex-col overflow-x-hidden"
+      >
         {children}
         <Toaster richColors position="top-right" />
       </body>

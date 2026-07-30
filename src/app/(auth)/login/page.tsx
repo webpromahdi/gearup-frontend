@@ -1,5 +1,5 @@
 import Logo from "@/components/shared/Logo";
-
+import Link from "next/link";
 import { GoogleButton } from "../_components/GoogleButton";
 import LoginForm from "../_components/LoginForm";
 
@@ -36,12 +36,12 @@ export default function LoginPage() {
 
       <p className="mt-8 text-center text-sm text-slate-500">
         Don&apos;t have an account?{" "}
-        <a
+        <Link
           href="/register"
           className="font-bold text-[#e31824] hover:underline"
         >
           Sign Up →
-        </a>
+        </Link>
       </p>
     </div>
   );

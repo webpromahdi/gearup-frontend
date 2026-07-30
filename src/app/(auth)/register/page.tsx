@@ -1,6 +1,7 @@
 import Logo from "@/components/shared/Logo";
 import { GoogleButton } from "../_components/GoogleButton";
 import RegisterForm from "../_components/RegisterForm";
+import Link from "next/link";
 
 export default function RegisterPage() {
   return (
@@ -25,9 +26,12 @@ export default function RegisterPage() {
       <GoogleButton register />
       <p className="mt-8 text-center text-sm text-slate-500">
         Already have an account?{" "}
-        <a href="/login" className="font-bold text-[#e31824] hover:underline">
+        <Link
+          href="/login"
+          className="font-bold text-[#e31824] hover:underline"
+        >
           Sign In →
-        </a>
+        </Link>
       </p>
     </div>
   );
