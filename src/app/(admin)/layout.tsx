@@ -59,7 +59,7 @@ const AdminSidebar = () => {
   );
 };
 
-const AdminShell = ({ children }: { children: React.ReactNode }) => {
+const AdminDashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen bg-[#f5f6fa] font-[Inter]">
       <AdminSidebar />
@@ -76,4 +76,4 @@ const AdminShell = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default AdminShell;
+export default AdminDashboardLayout;

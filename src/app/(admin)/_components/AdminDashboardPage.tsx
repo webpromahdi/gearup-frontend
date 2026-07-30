@@ -8,7 +8,6 @@ import {
   BarChart3,
   PieChart,
 } from "lucide-react";
-import AdminShell from "./AdminShell";
 import AdminUsersTable from "./AdminUsersTable";
 import AdminRentalTable from "./AdminRentalTable";
 import PageHeading from "@/components/shared/PageHeading";
@@ -46,7 +45,6 @@ const AdminDashboardPage = () => {
     ],
   ];
   return (
-    <AdminShell>
       <div className="p-5 sm:p-8">
         <PageHeading title="Admin Dashboard" />
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -170,7 +168,6 @@ const AdminDashboardPage = () => {
           <AdminRentalTable short />
         </section>
       </div>
-    </AdminShell>
   );
 }
 

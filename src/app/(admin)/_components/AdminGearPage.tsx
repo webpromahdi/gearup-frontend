@@ -1,5 +1,4 @@
 import { Mountain, Search, CheckCircle, XCircle } from "lucide-react";
-import AdminShell from "./AdminShell";
 import ConditionBadge from "@/components/shared/ConditionBadge";
 import Availability from "@/components/shared/Availability";
 import { providerGear } from "@/lib/data/providerData";
@@ -40,7 +39,6 @@ const AdminGearPage = () => {
     ],
   ];
   return (
-    <AdminShell>
       <div className="p-5 sm:p-8">
         <PageHeading title="Gear Moderation" />
         <p className="-mt-5 mb-6 text-sm text-slate-500">
@@ -145,7 +143,6 @@ const AdminGearPage = () => {
           </Table>
         </div>
       </div>
-    </AdminShell>
   );
 };
 

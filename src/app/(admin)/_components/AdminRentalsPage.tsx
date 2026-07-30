@@ -1,11 +1,9 @@
-import AdminShell from "./AdminShell";
 import AdminRentalTable from "./AdminRentalTable";
 import PageHeading from "@/components/shared/PageHeading";
 import { Card } from "@/components/ui/card";
 
 const AdminRentalsPage = () => {
   return (
-    <AdminShell>
       <div className="p-5 sm:p-8">
         <PageHeading title="Rental Management" />
         <div className="grid gap-4 sm:grid-cols-4">
@@ -55,7 +53,6 @@ const AdminRentalsPage = () => {
           <span className="px-2 py-2">Next →</span>
         </div>
       </div>
-    </AdminShell>
   );
 };
 
