@@ -1,5 +1,9 @@
-import { AtSign, Eye } from "lucide-react";
+"use client";
+
+import React from "react";
+import { AtSign, Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 export function Field({
   label,
@@ -8,6 +12,7 @@ export function Field({
   placeholder,
   type = "text",
   suffix,
+  onChange,
 }: {
   label: string;
   name: string;
@@ -15,8 +20,10 @@ export function Field({
   placeholder: string;
   type?: string;
   suffix?: boolean;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) {
   const id = label.toLowerCase().replaceAll(" ", "-");
+  const [showPassword, setShowPassword] = useState(false);
   return (
     <div>
       <label htmlFor={id} className="text-sm font-bold text-[#1b2748]">
@@ -27,12 +34,23 @@ export function Field({
         <Input
           id={id}
           name={name}
-          type={type}
+          type={suffix ? (showPassword ? "text" : "password") : type}
           placeholder={placeholder}
+          onChange={onChange}
           className="h-12 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-10 text-sm outline-none transition placeholder:text-slate-400 focus:border-[#e31824] focus:ring-2 focus:ring-red-100"
         />
         {suffix && (
-          <Eye className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+          >
+            {showPassword ? (
+              <EyeOff className="size-4" />
+            ) : (
+              <Eye className="size-4" />
+            )}
+          </button>
         )}
       </div>
     </div>
