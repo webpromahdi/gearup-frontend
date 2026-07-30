@@ -1,20 +1,41 @@
-import { getMe } from "@/app/services/auth/getMe";
-import { redirect } from "next/navigation";
+"use client";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { getMyProfile } from "@/lib/api/auth.api";
 import { ProfileCard } from "@/components/shared/profile/ProfileCard";
 import { ProfileOverview } from "@/components/shared/profile/ProfileOverview";
 
-export const metadata = {
-  title: "My Profile | GearUp",
-};
+const ProfilePage = () => {
+  const router = useRouter();
 
-const ProfilePage = async () => {
-  const result = await getMe();
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["my-profile"],
+    queryFn: getMyProfile,
+    retry: false,
+  });
 
-  if (!result || !result.success) {
-    redirect("/login");
+  useEffect(() => {
+    if (isError) {
+      router.push("/login");
+    }
+  }, [isError, router]);
+
+  if (isLoading) {
+    return (
+      <div className="container py-10">
+        <div className="mb-8 h-8 w-48 animate-pulse rounded-lg bg-slate-200" />
+        <div className="space-y-6">
+          <div className="h-40 animate-pulse rounded-2xl bg-slate-200" />
+          <div className="h-64 animate-pulse rounded-2xl bg-slate-200" />
+        </div>
+      </div>
+    );
   }
 
-  const user = result.data.profile;
+  if (!data?.success || !data?.data?.profile) return null;
+
+  const user = data.data.profile;
 
   return (
     <div className="container py-10">
