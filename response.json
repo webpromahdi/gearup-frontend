@@ -1,0 +1,32 @@
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Gear items retrieved successfully",
+  "data": {
+    "gearItems": [
+      {
+        "id": "d92fd60e-971b-4c96-8679-ff15b341878e",
+        "name": "Sony Alpha A7 III Mirrorless Camera",
+        "description": "Professional full-frame mirrorless camera with a 24.2MP sensor, 4K video recording, fast autofocus, and excellent low-light performance. Ideal for photography, weddings, travel, and content creation.",
+        "brand": "Sony",
+        "pricePerDay": "35",
+        "stock": 4,
+        "image": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1200&q=80",
+        "address": "Dhanmondi, Dhaka",
+        "condition": "EXCELLENT",
+        "availability": true,
+        "providerId": "f8963250-258c-4d7d-81b4-636882cac60a",
+        "categoryId": "4614d5fa-d15e-4a3a-a366-ce8f4447e1d2",
+        "createdAt": "2026-07-31T10:06:26.169Z",
+        "updatedAt": "2026-07-31T10:06:26.169Z",
+        "category": {
+          "id": "4614d5fa-d15e-4a3a-a366-ce8f4447e1d2",
+          "name": "Photography",
+          "description": "Cameras, lenses, tripods, drones, and photography accessories.",
+          "createdAt": "2026-07-30T18:01:38.635Z",
+          "updatedAt": "2026-07-30T18:01:38.635Z"
+        }
+      }
+    ]
+  }
+}

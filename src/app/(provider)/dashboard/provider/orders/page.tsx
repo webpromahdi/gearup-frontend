@@ -1,4 +1,5 @@
 import { Search } from "lucide-react";
+import Link from "next/link";
 import PageHeading from "@/components/shared/PageHeading";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
@@ -95,7 +96,7 @@ const ProviderOrdersPage = () => {
           </label>
         }
       />
-      <div className="flex gap-5 overflow-x-auto border-b border-slate-200">
+      <div className="flex gap-5 overflow-x-auto border-b border-slate-100 bg-white px-4 pt-4 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
         {[
           "All (9)",
           "PLACED (2)",
@@ -107,16 +108,16 @@ const ProviderOrdersPage = () => {
         ].map((tab, index) => (
           <Button
             key={tab}
-            className={`whitespace-nowrap border-b-2 pb-3 text-sm font-bold ${index === 0 ? "border-[#e31824] text-[#e31824]" : "border-transparent text-slate-500"}`}
+            className={`h-auto whitespace-nowrap rounded-none border-b-2 pb-3 text-sm font-bold transition-colors hover:bg-transparent ${index === 0 ? "border-[#e31824] text-[#e31824]" : "border-transparent text-slate-500 hover:text-[#1b2748]"}`}
           >
             {tab}
           </Button>
         ))}
       </div>
-      <div className="mt-6 overflow-x-auto rounded-xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+      <div className="mt-6 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
         <Table className="min-w-[960px] w-full text-left text-sm">
-          <TableHeader className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-[.08em] text-slate-500">
-            <TableRow>
+        <TableHeader className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+          <TableRow className="hover:bg-transparent">
               {[
                 "Order ID",
                 "Customer",
@@ -128,7 +129,7 @@ const ProviderOrdersPage = () => {
                 "Status",
                 "Action",
               ].map((x) => (
-                <TableHead key={x} className="px-4 py-4">
+              <TableHead key={x} className="px-5 py-3.5">
                   {x}
                 </TableHead>
               ))}
@@ -149,28 +150,28 @@ const ProviderOrdersPage = () => {
               ]) => (
                 <TableRow
                   key={id}
-                  className="border-b border-slate-100 last:border-0"
+                  className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50"
                 >
                   <TableCell className="px-4 py-4">
-                    <a
+                    <Link
                       href="/dashboard/provider/orders/ord-001"
                       className="font-bold text-[#e31824]"
                     >
                       {id}
-                    </a>
+                    </Link>
                   </TableCell>
-                  <TableCell className="px-4 py-4">{customer}</TableCell>
-                  <TableCell className="px-4 py-4">{gear}</TableCell>
-                  <TableCell className="px-4 py-4">{start}</TableCell>
-                  <TableCell className="px-4 py-4">{end}</TableCell>
-                  <TableCell className="px-4 py-4">{qty}</TableCell>
-                  <TableCell className="px-4 py-4 font-bold">{total}</TableCell>
-                  <TableCell className="px-4 py-4">
+                  <TableCell className="px-5 py-4 text-[13px] font-medium text-[#1b2748]">{customer}</TableCell>
+                  <TableCell className="px-5 py-4 text-[13px] text-slate-600">{gear}</TableCell>
+                  <TableCell className="px-5 py-4 text-[13px] text-slate-500">{start}</TableCell>
+                  <TableCell className="px-5 py-4 text-[13px] text-slate-500">{end}</TableCell>
+                  <TableCell className="px-5 py-4 text-[13px] text-slate-500">{qty}</TableCell>
+                  <TableCell className="px-5 py-4 text-[13px] font-bold text-[#1b2748]">{total}</TableCell>
+                  <TableCell className="px-5 py-4">
                     <StatusBadge status={status} />
                   </TableCell>
-                  <TableCell className="px-4 py-4">
+                  <TableCell className="px-5 py-4">
                     <Button
-                      className={`rounded-lg px-3 py-2 text-xs font-bold ${status === "PLACED" ? "bg-[#e31824] text-white" : status === "PAID" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}
+                      className={`h-8 rounded-lg px-3 text-xs font-bold transition-colors ${status === "PLACED" ? "bg-[#e31824] text-white hover:bg-[#c41520]" : status === "PAID" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
                     >
                       {action}
                     </Button>

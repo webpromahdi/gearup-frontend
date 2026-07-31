@@ -28,7 +28,7 @@ const ProviderOrderDetailsPage = () => {
         title="Order Details"
       />
       <div className="grid gap-6 xl:grid-cols-[3fr_2fr]">
-        <Card className="rounded-xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,.06)]">
+        <Card className="rounded-xl border border-slate-200 bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
           <img
             src="https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=900&auto=format&fit=crop&q=85"
             alt="Trek mountain bike"
@@ -67,17 +67,17 @@ const ProviderOrderDetailsPage = () => {
             <p className="font-bold text-amber-800">
               ⚠️ This order is awaiting your confirmation.
             </p>
-            <Button className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#e31824] text-sm font-bold text-white">
+            <Button className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#e31824] text-sm font-bold text-white transition-colors hover:bg-[#c41520]">
               <Check className="size-4" />
               Confirm Order
             </Button>
-            <Button className="mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-[#e31824] text-sm font-bold text-[#e31824]">
+            <Button className="mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-[#e31824] bg-white text-sm font-bold text-[#e31824] transition-colors hover:bg-red-50">
               <CircleX className="size-4" />
               Cancel Order
             </Button>
           </div>
         </Card>
-        <Card className="h-fit rounded-xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,.06)]">
+        <Card className="h-fit rounded-xl border border-slate-200 bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
           <div className="flex items-center gap-3">
             <span className="flex size-12 items-center justify-center rounded-full bg-blue-100 font-extrabold text-blue-700">
               JD
@@ -108,12 +108,12 @@ const ProviderOrderDetailsPage = () => {
               </strong>
             </p>
           </div>
-          <Button className="mt-5 flex h-11 w-full items-center justify-center rounded-lg border border-[#e31824] text-sm font-bold text-[#e31824]">
+          <Button className="mt-5 flex h-11 w-full items-center justify-center rounded-lg border border-[#e31824] bg-white text-sm font-bold text-[#e31824] transition-colors hover:bg-red-50">
             Send Message
           </Button>
         </Card>
       </div>
-      <section className="mt-8 rounded-xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,.06)]">
+      <section className="mt-8 rounded-xl border border-slate-200 bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
         <h2 className="text-xl font-extrabold text-[#1b2748]">
           Order Progress
         </h2>

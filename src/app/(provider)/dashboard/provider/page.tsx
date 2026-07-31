@@ -12,68 +12,85 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
+import { getProviderGearAction } from "@/app/(provider)/_actions/gearActions";
+import Link from "next/link";
 
-const ProviderDashboardPage = () => {
+const ProviderDashboardPage = async () => {
+  let totalGear = 0;
+  try {
+    const res = await getProviderGearAction();
+    const gearData = Array.isArray(res?.data?.gearItems)
+      ? res.data.gearItems
+      : Array.isArray(res?.data)
+        ? res.data
+        : Array.isArray(res)
+          ? res
+          : [];
+    totalGear = gearData.length;
+  } catch (err) {
+    console.error("Failed to fetch gear stats");
+  }
+
   const stats = [
-    [Boxes, "8", "Total Gear Listed", "text-[#e31824]", "bg-red-50"],
-    [RotateCw, "4", "Active Rentals", "text-emerald-600", "bg-emerald-50"],
-    [ClipboardList, "3", "Pending Orders", "text-amber-600", "bg-amber-50"],
-    [DollarSign, "$1,240", "Total Earnings", "text-[#1b2748]", "bg-slate-100"],
+    { Icon: Boxes, n: totalGear.toString(), label: "Total Gear Listed", c: "text-[#e31824]", b: "bg-red-50" },
+    { Icon: RotateCw, n: "4", label: "Active Rentals", c: "text-emerald-600", b: "bg-emerald-50" },
+    { Icon: ClipboardList, n: "3", label: "Pending Orders", c: "text-amber-600", b: "bg-amber-50" },
+    { Icon: DollarSign, n: "$1,240", label: "Total Earnings", c: "text-[#1b2748]", b: "bg-slate-100" },
   ];
   return (
-    <div className="p-5 sm:p-8">
+    <div className="min-h-screen bg-slate-50/50 p-6 sm:p-10">
       <PageHeading
         title="Provider Dashboard"
         action={
           <div className="flex gap-3">
-            <a
+            <Link
               href="/dashboard/provider/gear/new"
-              className="flex h-10 items-center gap-2 rounded-lg bg-[#e31824] px-4 text-sm font-bold text-white"
+            className="flex h-10 items-center gap-2 rounded-lg bg-[#e31824] px-4 text-sm font-bold text-white transition-colors hover:bg-[#c41520]"
             >
               <Plus className="size-4" />
               Add New Gear
-            </a>
-            <a
+            </Link>
+            <Link
               href="/dashboard/provider/orders"
-              className="hidden h-10 items-center rounded-lg border border-[#e31824] px-4 text-sm font-bold text-[#e31824] sm:flex"
+            className="hidden h-10 items-center rounded-lg border border-[#e31824] px-4 text-sm font-bold text-[#e31824] transition-colors hover:bg-red-50 sm:flex"
             >
               View All Orders
-            </a>
+            </Link>
           </div>
         }
       />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {stats.map(([Icon, n, label, c, b]) => (
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        {stats.map(({ Icon, n, label, c, b }) => (
           <Card
-            key={label as string}
-            className="flex items-center gap-4 rounded-xl bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)]"
+            key={label}
+            className="relative flex items-center gap-4 overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)]"
           >
             <span
-              className={`flex size-11 items-center justify-center rounded-lg ${b}`}
+              className={`flex size-11 items-center justify-center rounded-full ${b}`}
             >
               <Icon className={`size-6 ${c}`} />
             </span>
             <div>
-              <p className="text-2xl font-extrabold text-[#1b2748]">{n}</p>
-              <p className="text-sm text-slate-500">{label}</p>
+              <p className="text-2xl font-extrabold tracking-tight text-[#1b2748]">{n}</p>
+              <p className="mt-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">{label}</p>
             </div>
           </Card>
         ))}
       </div>
-      <section className="mt-8">
+      <section className="mt-10">
         <h2 className="mb-4 text-xl font-extrabold text-[#1b2748]">
           Gear Inventory
         </h2>
         <GearTable short />
       </section>
-      <section className="mt-8">
+      <section className="mt-10">
         <h2 className="mb-4 text-xl font-extrabold text-[#1b2748]">
           Pending Orders
         </h2>
-        <div className="overflow-x-auto rounded-xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
           <Table className="min-w-[760px] w-full text-left text-sm">
-            <TableHeader className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-[.08em] text-slate-500">
-              <TableRow>
+          <TableHeader className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+            <TableRow className="hover:bg-transparent">
                 {[
                   "Order ID",
                   "Customer",
@@ -83,7 +100,7 @@ const ProviderDashboardPage = () => {
                   "Status",
                   "Action",
                 ].map((x) => (
-                  <TableHead key={x} className="px-5 py-4">
+                  <TableHead key={x} className="px-5 py-3.5">
                     {x}
                   </TableHead>
                 ))}
@@ -121,22 +138,22 @@ const ProviderDashboardPage = () => {
               ].map(([id, cust, gear, dates, amount, status, action]) => (
                 <TableRow
                   key={id}
-                  className="border-b border-slate-100 last:border-0"
+                  className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50"
                 >
                   <TableCell className="px-5 py-4">
-                    <a
+                    <Link
                       href="/dashboard/provider/orders/ord-001"
                       className="font-bold text-[#e31824]"
                     >
                       {id}
-                    </a>
+                    </Link>
                   </TableCell>
-                  <TableCell className="px-5 py-4">{cust}</TableCell>
-                  <TableCell className="px-5 py-4">{gear}</TableCell>
-                  <TableCell className="px-5 py-4 text-slate-500">
+                  <TableCell className="px-5 py-4 text-[13px] font-medium text-[#1b2748]">{cust}</TableCell>
+                  <TableCell className="px-5 py-4 text-[13px] text-slate-600">{gear}</TableCell>
+                  <TableCell className="px-5 py-4 text-[13px] text-slate-500">
                     {dates}
                   </TableCell>
-                  <TableCell className="px-5 py-4 font-bold">
+                  <TableCell className="px-5 py-4 text-[13px] font-bold text-[#1b2748]">
                     {amount}
                   </TableCell>
                   <TableCell className="px-5 py-4">
@@ -144,7 +161,7 @@ const ProviderDashboardPage = () => {
                   </TableCell>
                   <TableCell className="px-5 py-4">
                     <Button
-                      className={`rounded-lg px-3 py-2 text-xs font-bold ${status === "PLACED" ? "bg-[#e31824] text-white" : status === "PAID" ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}
+                      className={`h-8 rounded-lg px-3 text-xs font-bold transition-colors ${status === "PLACED" ? "bg-[#e31824] text-white hover:bg-[#c41520]" : status === "PAID" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
                     >
                       {action}
                     </Button>

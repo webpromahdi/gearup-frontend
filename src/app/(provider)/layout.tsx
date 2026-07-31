@@ -51,7 +51,11 @@ const ProviderSidebar = () => {
           const isActive =
             href === "/dashboard/provider"
               ? pathname === href
-              : pathname.startsWith(href);
+              : href === "/dashboard/provider/gear"
+                ? pathname === href ||
+                  (pathname.startsWith(href) &&
+                    !pathname.startsWith("/dashboard/provider/gear/new"))
+                : pathname.startsWith(href);
           return (
             <Link
               key={label as string}
@@ -91,9 +95,9 @@ const ProviderDashboardLayout = ({
         <Link href="/dashboard/provider">
           <Logo inverse />
         </Link>
-        <a href="/" className="text-sm font-bold text-red-200">
+        <Link href="/" className="text-sm font-bold text-red-200">
           Exit dashboard
-        </a>
+        </Link>
       </header>
       <main className="min-h-screen lg:ml-[260px]">{children}</main>
     </div>

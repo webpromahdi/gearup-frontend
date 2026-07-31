@@ -1,154 +1,404 @@
+"use client";
+import type { ElementType, ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  ArrowLeft,
+  BadgeDollarSign,
+  Box,
+  ChevronDown,
+  ImageIcon,
+  Loader2,
+  MapPin,
+} from "lucide-react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+import { getProviderCategoriesAction } from "../_actions/categoryActions";
+import {
+  createProviderGearAction,
+  type CreateProviderGearPayload,
+} from "../_actions/gearActions";
 import Availability from "@/components/shared/Availability";
-import PageHeading from "@/components/shared/PageHeading";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
+const conditions = ["NEW", "EXCELLENT", "GOOD", "FAIR", "POOR"] as const;
+
+const GearSchema = z.object({
+  name: z.string().trim().min(2, "Gear name must be at least 2 characters"),
+  description: z
+    .string()
+    .trim()
+    .min(10, "Description must be at least 10 characters"),
+  brand: z.string().trim().min(2, "Brand must be at least 2 characters"),
+  categoryId: z.string().min(1, "Please select a category"),
+  pricePerDay: z
+    .number({ message: "Price per day is required" })
+    .positive("Price per day must be greater than 0"),
+  stock: z
+    .number({ message: "Stock is required" })
+    .int("Stock must be a whole number")
+    .min(1, "Stock must be at least 1"),
+  condition: z.enum(conditions, { error: "Please select a condition" }),
+  address: z.string().trim().optional(),
+  image: z.string().trim().url("Enter a valid image URL"),
+  availability: z.boolean(),
+});
+
+type GearFormValues = z.output<typeof GearSchema>;
+
 const ProviderGearForm = ({ edit = false }: { edit?: boolean }) => {
-  const bike =
-    "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=300&auto=format&fit=crop&q=85";
-  const title = edit ? "✏️ Edit Gear — Trek X-Caliber MTB" : "➕ List New Gear";
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const title = edit ? "Edit Gear" : "List New Gear";
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<GearFormValues>({
+    resolver: zodResolver(GearSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      brand: "",
+      categoryId: "",
+      pricePerDay: 0,
+      stock: 1,
+      condition: "NEW",
+      address: "",
+      image: "",
+      availability: true,
+    } as unknown as GearFormValues,
+  });
+
+  const { data, isLoading: isCategoriesLoading } = useQuery({
+    queryKey: ["provider-categories"],
+    queryFn: getProviderCategoriesAction,
+  });
+
+  const createMutation = useMutation({
+    mutationFn: (payload: CreateProviderGearPayload) =>
+      createProviderGearAction(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["provider-gear"] });
+      queryClient.invalidateQueries({ queryKey: ["gear"] });
+      toast.success("Gear listing created successfully");
+      reset();
+      router.push("/dashboard/provider/gear");
+      router.refresh();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to create gear listing");
+    },
+  });
+
+  const categories = data ?? [];
+  const availability = watch("availability");
+
+  const onSubmit = (values: GearFormValues) => {
+    createMutation.mutate({
+      ...values,
+      address: values.address || undefined,
+    });
+  };
+
   return (
-    <div className="p-5 sm:p-8">
-      <PageHeading
-        crumb={edit ? "Dashboard  ›  My Gear  ›  Edit Gear" : undefined}
-        title={title}
-      />
-      <Card className="rounded-xl bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)] sm:p-7">
-        <p className="mb-7 text-sm text-slate-500">
-          Fill in the details to list your gear for rent
-        </p>
-        <form className="grid gap-5 md:grid-cols-2">
-          <label className="block md:col-span-2 text-sm font-bold text-[#1b2748]">
-            Gear Name*
-            <Input
-              defaultValue={edit ? "Trek X-Caliber Mountain Bike" : undefined}
-              placeholder="e.g. Trek X-Caliber Mountain Bike"
-              className="mt-2 h-11 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-[#e31824]"
-            />
-          </label>
-          <label className="block md:col-span-2 text-sm font-bold text-[#1b2748]">
-            Description*
-            <Textarea
-              defaultValue={
-                edit
-                  ? "Top-tier hardtail MTB with Shimano drivetrain, great for trail riding and daily adventure."
-                  : undefined
-              }
-              placeholder="Describe your gear in detail..."
-              className="mt-2 min-h-28 w-full rounded-lg border border-slate-200 p-3 text-sm outline-none focus:border-[#e31824]"
-            />
-          </label>
-          <label className="text-sm font-bold text-[#1b2748]">
-            Brand*
-            <Input
-              defaultValue={edit ? "Trek" : undefined}
-              placeholder="Brand name"
-              className="mt-2 h-11 w-full rounded-lg border border-slate-200 px-3 text-sm"
-            />
-          </label>
-          <label className="text-sm font-bold text-[#1b2748]">
-            Category*
-            <Select
-              defaultValue={edit ? "Cycling" : ""}
-              className="mt-2 h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm"
-            >
-              <option value="">Select category</option>
-              {[
-                "Camping",
-                "Cycling",
-                "Water Sports",
-                "Winter Sports",
-                "Fitness & Gym",
-                "Rock Climbing",
-                "Team Sports",
-                "Photography",
-              ].map((x) => (
-                <option key={x}>{x}</option>
-              ))}
-            </Select>
-          </label>
-          <label className="text-sm font-bold text-[#1b2748]">
-            Price Per Day* ($)
-            <Input
-              type="number"
-              defaultValue={edit ? 25 : undefined}
-              className="mt-2 h-11 w-full rounded-lg border border-slate-200 px-3 text-sm"
-            />
-          </label>
-          <label className="text-sm font-bold text-[#1b2748]">
-            Stock*
-            <Input
-              type="number"
-              min="1"
-              defaultValue={edit ? 3 : undefined}
-              className="mt-2 h-11 w-full rounded-lg border border-slate-200 px-3 text-sm"
-            />
-          </label>
-          <label className="text-sm font-bold text-[#1b2748]">
-            Condition*
-            <Select
-              defaultValue={edit ? "EXCELLENT" : ""}
-              className="mt-2 h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm"
-            >
-              <option value="">Select condition</option>
-              {["NEW", "EXCELLENT", "GOOD", "FAIR", "POOR"].map((x) => (
-                <option key={x}>{x}</option>
-              ))}
-            </Select>
-          </label>
-          <label className="text-sm font-bold text-[#1b2748]">
-            Address
-            <Input
-              defaultValue={edit ? "Dhanmondi, Dhaka" : undefined}
-              placeholder="Pickup address"
-              className="mt-2 h-11 w-full rounded-lg border border-slate-200 px-3 text-sm"
-            />
-          </label>
-          <label className="md:col-span-2 text-sm font-bold text-[#1b2748]">
-            Image URL*
-            <div className="mt-2 flex gap-4">
-              <Input
-                defaultValue={edit ? bike : undefined}
-                placeholder="https://..."
-                className="h-11 min-w-0 flex-1 rounded-lg border border-slate-200 px-3 text-sm"
-              />
-              <img
-                src={bike}
-                alt="Gear listing preview"
-                className="size-16 rounded-lg object-cover"
-              />
-            </div>
-          </label>
-          <div className="md:col-span-2 flex items-center justify-between rounded-lg bg-slate-50 p-4">
-            <div>
-              <p className="text-sm font-bold text-[#1b2748]">Availability</p>
-              <p className="mt-1 text-xs text-slate-500">
-                Make available for rent immediately
-              </p>
-            </div>
-            <Availability active />
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f9fbff_0%,#f4f7fb_100%)] p-5 sm:p-8 lg:p-10">
+      <div className="mx-auto max-w-6xl">
+        <header className="mb-10 flex items-start gap-5">
+          <Link
+            href="/dashboard/provider/gear"
+            aria-label="Back to My Gear"
+            className="flex size-12 shrink-0 items-center justify-center rounded-2xl border border-slate-200/80 bg-white text-slate-500 shadow-[0_8px_24px_rgba(15,23,42,0.06)] transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-[#15213d]"
+          >
+            <ArrowLeft className="size-5" />
+          </Link>
+          <div className="pt-0.5">
+            <h1 className="text-[32px] font-extrabold leading-tight text-[#15213d]">
+              {title}
+            </h1>
+            <p className="mt-2 text-[15px] leading-6 text-slate-500">
+              {edit
+                ? "Update your gear details and availability."
+                : "Add your gear details to list it for rent and start earning."}
+            </p>
           </div>
-          <p className="md:col-span-2 text-xs text-slate-400">
-            * Required fields
-          </p>
-          <div className="md:col-span-2 flex justify-end gap-3">
-            <a
-              href="/dashboard/provider/gear"
-              className="rounded-lg border border-slate-300 px-5 py-3 text-sm font-bold text-slate-600"
-            >
-              Cancel
-            </a>
-            <Button className="rounded-lg bg-[#e31824] px-5 py-3 text-sm font-bold text-white">
-              {edit ? "Update Gear Listing" : "Submit Gear Listing"}
-            </Button>
-          </div>
+        </header>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
+          <Card className={cardClassName}>
+            <SectionHeading
+              icon={Box}
+              iconClassName="bg-red-50 text-[#e31824]"
+              title="Gear Information"
+              description="Core listing details"
+            />
+            <div className="mt-8 grid gap-x-7 gap-y-6 md:grid-cols-2">
+              <Field
+                label="Gear Name"
+                required
+                error={errors.name?.message}
+                className="md:col-span-2"
+              >
+                <Input {...register("name")} className={inputClassName} />
+              </Field>
+              <Field
+                label="Description"
+                required
+                error={errors.description?.message}
+                className="md:col-span-2"
+              >
+                <Textarea
+                  {...register("description")}
+                  className={`${textareaClassName} min-h-36 resize-y p-4`}
+                />
+              </Field>
+              <Field label="Brand" required error={errors.brand?.message}>
+                <Input {...register("brand")} className={inputClassName} />
+              </Field>
+              <Field
+                label="Category"
+                required
+                error={errors.categoryId?.message}
+              >
+                <SelectShell>
+                  <select
+                    {...register("categoryId")}
+                    className={selectClassName}
+                    disabled={isCategoriesLoading}
+                  >
+                    <option value="" disabled hidden />
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </SelectShell>
+                {isCategoriesLoading && (
+                  <p className="mt-2 text-xs font-medium text-slate-500">
+                    Loading categories...
+                  </p>
+                )}
+              </Field>
+            </div>
+          </Card>
+
+          <Card className={cardClassName}>
+            <SectionHeading
+              icon={BadgeDollarSign}
+              iconClassName="bg-emerald-50 text-emerald-600"
+              title="Pricing & Inventory"
+              description="Rental terms and availability"
+            />
+            <div className="mt-8 grid gap-x-7 gap-y-6 md:grid-cols-2">
+              <Field
+                label="Price Per Day ($)"
+                required
+                error={errors.pricePerDay?.message}
+              >
+                <div className="flex overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.02)] transition-all focus-within:border-[#e31824] focus-within:ring-4 focus-within:ring-red-100/70">
+                  <span className="flex h-12 w-11 items-center justify-center border-r border-slate-200/80 bg-slate-50 text-sm font-semibold text-slate-600">
+                    $
+                  </span>
+                  <Input
+                    {...register("pricePerDay", { valueAsNumber: true })}
+                    type="number"
+                    step="0.01"
+                    className="h-12 rounded-none border-0 bg-white px-4 text-sm text-[#15213d] shadow-none focus-visible:border-0 focus-visible:ring-0"
+                  />
+                </div>
+              </Field>
+              <Field label="Stock" required error={errors.stock?.message}>
+                <Input
+                  {...register("stock", { valueAsNumber: true })}
+                  type="number"
+                  min="1"
+                  className={inputClassName}
+                />
+              </Field>
+              <Field
+                label="Condition"
+                required
+                error={errors.condition?.message}
+              >
+                <SelectShell>
+                  <select
+                    {...register("condition")}
+                    className={selectClassName}
+                  >
+                    <option value="" disabled hidden />
+                    {conditions.map((condition) => (
+                      <option key={condition} value={condition}>
+                        {condition}
+                      </option>
+                    ))}
+                  </select>
+                </SelectShell>
+              </Field>
+              <button
+                type="button"
+                onClick={() =>
+                  setValue("availability", !availability, {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  })
+                }
+                className="flex min-h-12 items-center justify-between rounded-xl border border-slate-200/70 bg-slate-50/80 px-4 py-3 text-left transition-colors hover:border-slate-300 hover:bg-slate-50"
+              >
+                <div>
+                  <p className="text-sm font-bold text-[#15213d]">
+                    Availability
+                  </p>
+                  <p className="mt-1 text-xs leading-4 text-slate-500">
+                    Make available for rent immediately
+                  </p>
+                </div>
+                <Availability active={availability} />
+              </button>
+            </div>
+          </Card>
+
+          <Card className={cardClassName}>
+            <SectionHeading
+              icon={MapPin}
+              iconClassName="bg-amber-50 text-amber-500"
+              title="Pickup Details"
+              description="Customer pickup location"
+            />
+            <div className="mt-8">
+              <Field label="Pickup Address" error={errors.address?.message}>
+                <Input {...register("address")} className={inputClassName} />
+              </Field>
+            </div>
+          </Card>
+
+          <Card className={cardClassName}>
+            <SectionHeading
+              icon={ImageIcon}
+              iconClassName="bg-violet-50 text-violet-600"
+              title="Media"
+              description="Listing image source"
+            />
+            <div className="mt-8">
+              <Field label="Image URL" required error={errors.image?.message}>
+                <Input {...register("image")} className={inputClassName} />
+              </Field>
+            </div>
+          </Card>
+
+          <footer className="flex flex-col gap-4 pb-2 pt-1 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm font-medium text-slate-500">
+              * Required fields
+            </p>
+            <div className="flex flex-wrap justify-end gap-3">
+              <Link
+                href="/dashboard/provider/gear"
+                className="flex h-12 items-center rounded-xl border border-slate-200/90 bg-white px-6 text-sm font-bold text-slate-600 shadow-[0_4px_14px_rgba(15,23,42,0.04)] transition-colors hover:border-slate-300 hover:bg-slate-50"
+              >
+                Cancel
+              </Link>
+              <Button
+                type="submit"
+                disabled={createMutation.isPending}
+                className="h-12 rounded-xl bg-[#e31824] px-6 text-sm font-bold text-white shadow-[0_10px_22px_rgba(227,24,36,0.20)] transition-colors hover:bg-[#c41520] disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {createMutation.isPending ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : edit ? (
+                  "Update Gear Listing"
+                ) : (
+                  "Submit Gear Listing"
+                )}
+              </Button>
+            </div>
+          </footer>
         </form>
-      </Card>
+      </div>
     </div>
   );
 };
+
+const cardClassName =
+  "gap-0 rounded-[22px] border border-slate-200/80 bg-white/95 p-6 shadow-[0_18px_48px_rgba(15,23,42,0.055)] ring-1 ring-white/70 sm:p-8";
+
+const inputClassName =
+  "h-12 rounded-xl border border-slate-200/90 bg-white px-4 text-sm text-[#15213d] shadow-[0_1px_2px_rgba(15,23,42,0.02)] transition-all focus:border-[#e31824] focus:ring-4 focus:ring-red-100/70";
+
+const textareaClassName =
+  "rounded-xl border border-slate-200/90 bg-white text-sm text-[#15213d] shadow-[0_1px_2px_rgba(15,23,42,0.02)] transition-all focus:border-[#e31824] focus:ring-4 focus:ring-red-100/70";
+
+const selectClassName =
+  "h-12 w-full appearance-none rounded-xl border border-slate-200/90 bg-white px-4 pr-11 text-sm text-[#15213d] shadow-[0_1px_2px_rgba(15,23,42,0.02)] transition-all disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400 focus:border-[#e31824] focus:ring-4 focus:ring-red-100/70";
+
+const Field = ({
+  label,
+  required = false,
+  error,
+  className = "",
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  error?: string;
+  className?: string;
+  children: ReactNode;
+}) => (
+  <label className={`block ${className}`}>
+    <span className="mb-2.5 block text-sm font-bold text-[#15213d]">
+      {label}
+      {required && <span className="ml-1 text-[#e31824]">*</span>}
+    </span>
+    {children}
+    {error && (
+      <p className="mt-2 text-xs font-semibold text-[#e31824]">{error}</p>
+    )}
+  </label>
+);
+
+const SelectShell = ({ children }: { children: ReactNode }) => (
+  <div className="relative">
+    {children}
+    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+  </div>
+);
+
+const SectionHeading = ({
+  icon: Icon,
+  iconClassName,
+  title,
+  description,
+}: {
+  icon: ElementType;
+  iconClassName: string;
+  title: string;
+  description: string;
+}) => (
+  <div className="flex items-center gap-4 border-b border-slate-100 pb-6">
+    <span
+      className={`flex size-11 items-center justify-center rounded-2xl ${iconClassName}`}
+    >
+      <Icon className="size-5" />
+    </span>
+    <div>
+      <h2 className="text-lg font-extrabold leading-6 text-[#15213d]">
+        {title}
+      </h2>
+      <p className="mt-1 text-sm leading-5 text-slate-500">{description}</p>
+    </div>
+  </div>
+);
 
 export default ProviderGearForm;
