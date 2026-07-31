@@ -1,4 +1,5 @@
 import { adminUsers } from "@/lib/data/adminData";
+import { MoreVertical } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -7,39 +8,39 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const RoleBadge = ({ role }: { role: string }) => {
   const classes: Record<string, string> = {
-    CUSTOMER: "bg-blue-100 text-blue-700",
-    PROVIDER: "bg-amber-100 text-amber-700",
-    ADMIN: "bg-[#1b2748] text-white",
+    CUSTOMER: "bg-blue-50 text-blue-600",
+    PROVIDER: "bg-amber-50 text-amber-600",
+    ADMIN: "bg-slate-100 text-slate-700",
   };
   return (
     <span
-      className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold tracking-[.06em] ${classes[role]}`}
+      className={`rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide ${classes[role]}`}
     >
       {role}
     </span>
   );
 };
+
 const AdminUsersTable = ({ short = false }: { short?: boolean }) => {
   const rows = short ? adminUsers.slice(0, 5) : adminUsers;
   return (
-    <div className="overflow-x-auto rounded-xl bg-white shadow-[0_2px_12px_rgba(0,0,0,.06)]">
-      <Table className="min-w-[860px] w-full text-left text-sm">
-        <TableHeader className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-[.08em] text-slate-500">
-          <TableRow>
+    <ScrollArea className="h-full w-full rounded-lg border border-slate-200 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+      <Table className="min-w-[500px] w-full text-left text-sm">
+        <TableHeader className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+          <TableRow className="hover:bg-transparent">
             {[
               "#",
-              "Avatar",
-              "Full Name",
-              "Email",
+              "User",
               "Role",
               "Status",
-              "Joined Date",
-              "Actions",
-            ].map((x) => (
-              <TableHead key={x} className="px-4 py-4">
+              "Joined",
+              "", // Empty header for actions
+            ].map((x, i) => (
+              <TableHead key={i} className="px-5 py-3.5">
                 {x}
               </TableHead>
             ))}
@@ -49,51 +50,49 @@ const AdminUsersTable = ({ short = false }: { short?: boolean }) => {
           {rows.map(([ini, name, email, role, status, date, color], i) => (
             <TableRow
               key={email}
-              className="border-b border-slate-100 last:border-0"
+              className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50"
             >
-              <TableCell className="px-4 py-3 text-slate-500">
+              <TableCell className="px-5 py-4 text-[13px] text-slate-400">
                 {i + 1}
               </TableCell>
-              <TableCell className="px-4 py-3">
-                <span
-                  className={`flex size-9 items-center justify-center rounded-full text-xs font-extrabold ${color}`}
-                >
-                  {ini}
-                </span>
+              <TableCell className="px-5 py-4">
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`flex size-8 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${color}`}
+                  >
+                    {ini}
+                  </span>
+                  <div>
+                    <p className="text-[13px] font-bold text-[#1b2748]">
+                      {name}
+                    </p>
+                  </div>
+                </div>
               </TableCell>
-              <TableCell className="px-4 py-3 font-bold text-[#1b2748]">
-                {name}
-              </TableCell>
-              <TableCell className="px-4 py-3 text-slate-500">
-                {email}
-              </TableCell>
-              <TableCell className="px-4 py-3">
+              <TableCell className="px-5 py-4">
                 <RoleBadge role={role} />
               </TableCell>
-              <TableCell className="px-4 py-3">
+              <TableCell className="px-5 py-4">
                 <span
-                  className={`rounded-full px-2.5 py-1 text-[10px] font-extrabold ${status === "ACTIVE" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}
+                  className={`rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide ${status === "ACTIVE" ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"}`}
                 >
                   {status}
                 </span>
               </TableCell>
-              <TableCell className="px-4 py-3 text-slate-500">{date}</TableCell>
-              <TableCell className="px-4 py-3">
-                {role === "ADMIN" ? (
-                  "—"
-                ) : (
-                  <button
-                    className={`rounded-lg border px-3 py-1.5 text-xs font-bold ${status === "ACTIVE" ? "border-[#e31824] text-[#e31824]" : "border-emerald-600 text-emerald-600"}`}
-                  >
-                    {status === "ACTIVE" ? "Suspend" : "Activate"}
-                  </button>
-                )}
+              <TableCell className="px-5 py-4 text-[13px] text-slate-500">
+                {date}
+              </TableCell>
+              <TableCell className="px-5 py-4 text-right">
+                <button className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+                  <MoreVertical className="size-4" />
+                </button>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-    </div>
+      <ScrollBar orientation="horizontal" />
+    </ScrollArea>
   );
 };
 

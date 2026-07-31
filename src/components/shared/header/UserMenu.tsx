@@ -4,7 +4,7 @@ import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { logout } from "@/app/(auth)/_actions/logout";
+import { logout } from "@/app/services/auth/logout";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,7 +54,7 @@ export const GuestActions = ({ mobile = false }: { mobile?: boolean }) => {
       </Link>
     </div>
   );
-}
+};
 
 //Desktop Account Dropdown
 

@@ -1,7 +1,8 @@
+import ProviderGearForm from "@/app/(provider)/_components/ProviderGearForm";
+
 const ProviderNewGearPage = () => {
-  return (
-    <div>ProviderNewGearPage</div>
-  );
+  return <ProviderGearForm />;
 };
 
 export default ProviderNewGearPage;
+

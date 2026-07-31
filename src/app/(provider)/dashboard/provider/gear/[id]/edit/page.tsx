@@ -1,7 +1,7 @@
+import ProviderGearForm from "./ProviderGearForm";
+
 const ProviderEditGearPage = () => {
-  return (
-    <div>ProviderEditGearPage</div>
-  );
+  return <ProviderGearForm edit />;
 };
 
 export default ProviderEditGearPage;
