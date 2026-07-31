@@ -1,7 +1,7 @@
-const GearDetailsPage = () => {
-  return (
-    <div>GearDetailsPage</div>
-  );
+import GearDetailsPage from "@/app/(public)/_components/GearDetailsPage";
+
+const GearDetails = () => {
+  return <GearDetailsPage />;
 };
 
-export default GearDetailsPage;
+export default GearDetails;

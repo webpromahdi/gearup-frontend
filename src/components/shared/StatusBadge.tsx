@@ -1,5 +1,3 @@
-
-
 const statusClasses: Record<string, string> = {
   PLACED: "bg-amber-100 text-amber-700",
   CONFIRMED: "bg-blue-100 text-blue-700",
@@ -18,6 +16,6 @@ const StatusBadge = ({ status }: { status: string }) => {
       {status.replaceAll("_", " ")}
     </span>
   );
-}
+};
 
 export default StatusBadge;
