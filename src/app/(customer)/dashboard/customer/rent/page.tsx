@@ -122,12 +122,12 @@ const CustomerRentGearPage = () => {
           <h2 className="text-lg font-bold text-[#1b2748]">
             Browse by Category
           </h2>
-          <a
+          <Link
             href="#"
             className="text-sm font-bold text-[#e31824] hover:underline"
           >
             View All
-          </a>
+          </Link>
         </div>
         <div className="flex gap-4 overflow-x-auto pb-2">
           {categories.length === 0 && (

@@ -1,5 +1,6 @@
 import React from "react";
 import { Star, Plus, Package, RotateCw, DollarSign } from "lucide-react";
+import Link from "next/link";
 import StatusBadge from "@/components/shared/StatusBadge";
 import PageHeading from "@/components/shared/PageHeading";
 import {
@@ -28,19 +29,19 @@ const CustomerDashboardPage = () => {
         title="Welcome back, John!"
         action={
           <div className="flex gap-3">
-            <a
-              href="/gear"
+            <Link
+              href="/dashboard/customer/rent"
               className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#e31824] px-4 text-sm font-bold text-white hover:bg-[#c41520]"
             >
               <Plus className="size-4" />
               Rent New Gear
-            </a>
-            <a
-              href="/dashboard/customer/rentals/ord-2025-0089"
+            </Link>
+            <Link
+              href="/dashboard/customer/rentals"
               className="hidden h-10 items-center rounded-lg border border-[#e31824] px-4 text-sm font-bold text-[#e31824] hover:bg-red-50 sm:inline-flex"
             >
               View All Rentals →
-            </a>
+            </Link>
           </div>
         }
       />
@@ -67,12 +68,12 @@ const CustomerDashboardPage = () => {
           <h2 className="text-xl font-extrabold text-[#1b2748]">
             Recent Rentals
           </h2>
-          <a
-            href="/dashboard/customer/rentals/ord-2025-0089"
+          <Link
+            href="/dashboard/customer/rentals"
             className="text-sm font-bold text-[#e31824] hover:underline"
           >
             View All
-          </a>
+          </Link>
         </div>
         <div className="overflow-x-auto rounded-xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
           <Table className="min-w-[860px] w-full text-left text-sm">
@@ -125,14 +126,14 @@ const CustomerDashboardPage = () => {
                     </TableCell>
                     <TableCell className="px-5 py-4">
                       {action === "Pay Now" ? (
-                        <a
+                        <Link
                           href="/dashboard/customer/payment/ord-2025-0089"
                           className="inline-flex rounded-lg bg-[#e31824] px-3 py-2 text-xs font-bold text-white"
                         >
                           Pay Now
-                        </a>
+                        </Link>
                       ) : (
-                        <a
+                        <Link
                           href={
                             action === "Leave Review"
                               ? "/dashboard/customer/reviews"
@@ -141,7 +142,7 @@ const CustomerDashboardPage = () => {
                           className="text-xs font-bold text-[#e31824] hover:underline"
                         >
                           {action}
-                        </a>
+                        </Link>
                       )}
                     </TableCell>
                   </TableRow>
