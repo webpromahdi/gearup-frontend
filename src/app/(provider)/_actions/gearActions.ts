@@ -42,7 +42,12 @@ export const createProviderGearAction = async (
 };
 
 export const getProviderGearAction = async () => {
-  const accessToken = await getProviderToken();
+  let accessToken: string | undefined;
+  try {
+    accessToken = await getProviderToken();
+  } catch {
+    return null;
+  }
 
   const res = await fetch(`${process.env.BACKEND_API_URL}/api/provider/gear`, {
     cache: "no-store",
@@ -52,6 +57,71 @@ export const getProviderGearAction = async () => {
   });
 
   const result = await res.json();
-  if (!res.ok) throw new Error(result.message || "Failed to fetch provider gear");
+  if (!res.ok)
+    throw new Error(result.message || "Failed to fetch provider gear");
+  return result;
+};
+
+export const getSingleGearAction = async (id: string) => {
+  let accessToken: string | undefined;
+  try {
+    accessToken = await getProviderToken();
+  } catch {
+    return null;
+  }
+
+  const res = await fetch(
+    `${process.env.BACKEND_API_URL}/api/gears/${id}`,
+    {
+      cache: "no-store",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.message || "Failed to fetch gear");
+  return result;
+};
+
+export const deleteProviderGearAction = async (id: string) => {
+  const accessToken = await getProviderToken();
+
+  const res = await fetch(
+    `${process.env.BACKEND_API_URL}/api/provider/gear/${id}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.message || "Failed to delete gear");
+  return result;
+};
+
+export const updateProviderGearAction = async (
+  id: string,
+  payload: Partial<CreateProviderGearPayload>,
+) => {
+  const accessToken = await getProviderToken();
+
+  const res = await fetch(
+    `${process.env.BACKEND_API_URL}/api/provider/gear/${id}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(payload),
+    },
+  );
+
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.message || "Failed to update gear");
   return result;
 };

@@ -1,7 +1,6 @@
 "use client";
-
 import { Trash2, Loader2 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -11,10 +10,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getProviderGearAction } from "../_actions/gearActions";
+import {
+  getProviderGearAction,
+  deleteProviderGearAction,
+} from "../_actions/gearActions";
 import ConditionBadge from "@/components/shared/ConditionBadge";
 import Availability from "@/components/shared/Availability";
 import Link from "next/link";
+import { toast } from "sonner";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 
 type GearItem = {
   id: string;
@@ -31,10 +35,30 @@ type GearItem = {
 };
 
 const GearTable = ({ short = false }: { short?: boolean }) => {
+  const queryClient = useQueryClient();
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ["provider-gear"],
     queryFn: getProviderGearAction,
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteProviderGearAction(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["provider-gear"] });
+      queryClient.invalidateQueries({ queryKey: ["gear"] });
+      toast.success("Gear deleted successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to delete gear");
+    },
+  });
+
+  const handleDelete = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this gear?")) {
+      deleteMutation.mutate(id);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -147,7 +171,9 @@ const GearTable = ({ short = false }: { short?: boolean }) => {
                   </TableCell>
                 )}
                 <TableCell className="px-5 py-4 text-[13px] text-slate-600">
-                  {typeof gear.category === 'object' ? gear.category?.name : gear.category || gear.categoryId}
+                  {typeof gear.category === "object"
+                    ? gear.category?.name
+                    : gear.category || gear.categoryId}
                 </TableCell>
                 <TableCell className="px-5 py-4 text-[13px] font-bold text-[#1b2748]">
                   ${gear.pricePerDay}
@@ -173,8 +199,16 @@ const GearTable = ({ short = false }: { short?: boolean }) => {
                     >
                       Edit
                     </Link>
-                    <Button className="size-8 rounded-md text-slate-400 hover:bg-red-50 hover:text-[#e31824]">
-                      <Trash2 className="size-4" />
+                    <Button
+                      onClick={() => handleDelete(gear.id)}
+                      disabled={deleteMutation.isPending}
+                      className="size-8 rounded-md text-slate-400 hover:bg-red-50 hover:text-[#e31824] disabled:opacity-50"
+                    >
+                      {deleteMutation.isPending ? (
+                        <Loader2 className="size-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="size-4" />
+                      )}
                     </Button>
                   </div>
                 </TableCell>

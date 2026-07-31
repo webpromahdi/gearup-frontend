@@ -19,6 +19,7 @@ import * as z from "zod";
 import { getProviderCategoriesAction } from "../_actions/categoryActions";
 import {
   createProviderGearAction,
+  updateProviderGearAction,
   type CreateProviderGearPayload,
 } from "../_actions/gearActions";
 import Availability from "@/components/shared/Availability";
@@ -52,7 +53,15 @@ const GearSchema = z.object({
 
 type GearFormValues = z.output<typeof GearSchema>;
 
-const ProviderGearForm = ({ edit = false }: { edit?: boolean }) => {
+const ProviderGearForm = ({
+  edit = false,
+  gearId,
+  initialValues,
+}: {
+  edit?: boolean;
+  gearId?: string;
+  initialValues?: GearFormValues;
+}) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const title = edit ? "Edit Gear" : "List New Gear";
@@ -66,18 +75,20 @@ const ProviderGearForm = ({ edit = false }: { edit?: boolean }) => {
     formState: { errors },
   } = useForm<GearFormValues>({
     resolver: zodResolver(GearSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      brand: "",
-      categoryId: "",
-      pricePerDay: 0,
-      stock: 1,
-      condition: "NEW",
-      address: "",
-      image: "",
-      availability: true,
-    } as unknown as GearFormValues,
+    defaultValues:
+      initialValues ||
+      ({
+        name: "",
+        description: "",
+        brand: "",
+        categoryId: "",
+        pricePerDay: 0,
+        stock: 1,
+        condition: "NEW",
+        address: "",
+        image: "",
+        availability: true,
+      } as unknown as GearFormValues),
   });
 
   const { data, isLoading: isCategoriesLoading } = useQuery({
@@ -101,14 +112,35 @@ const ProviderGearForm = ({ edit = false }: { edit?: boolean }) => {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: (payload: Partial<CreateProviderGearPayload>) =>
+      updateProviderGearAction(gearId!, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["provider-gear"] });
+      queryClient.invalidateQueries({ queryKey: ["gear"] });
+      toast.success("Gear listing updated successfully");
+      reset();
+      router.push("/dashboard/provider/gear");
+      router.refresh();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to update gear listing");
+    },
+  });
+
   const categories = data ?? [];
   const availability = watch("availability");
 
   const onSubmit = (values: GearFormValues) => {
-    createMutation.mutate({
+    const payload = {
       ...values,
       address: values.address || undefined,
-    });
+    };
+    if (edit) {
+      updateMutation.mutate(payload);
+    } else {
+      createMutation.mutate(payload as CreateProviderGearPayload);
+    }
   };
 
   return (
@@ -309,13 +341,13 @@ const ProviderGearForm = ({ edit = false }: { edit?: boolean }) => {
               </Link>
               <Button
                 type="submit"
-                disabled={createMutation.isPending}
+                disabled={createMutation.isPending || updateMutation.isPending}
                 className="h-12 rounded-xl bg-[#e31824] px-6 text-sm font-bold text-white shadow-[0_10px_22px_rgba(227,24,36,0.20)] transition-colors hover:bg-[#c41520] disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {createMutation.isPending ? (
+                {createMutation.isPending || updateMutation.isPending ? (
                   <>
                     <Loader2 className="size-4 animate-spin" />
-                    Submitting...
+                    {edit ? "Updating..." : "Submitting..."}
                   </>
                 ) : edit ? (
                   "Update Gear Listing"

@@ -28,14 +28,38 @@ const ProviderDashboardPage = async () => {
           : [];
     totalGear = gearData.length;
   } catch (err) {
-    console.error("Failed to fetch gear stats");
+    console.error("Failed to fetch gear stats:", err);
   }
 
   const stats = [
-    { Icon: Boxes, n: totalGear.toString(), label: "Total Gear Listed", c: "text-[#e31824]", b: "bg-red-50" },
-    { Icon: RotateCw, n: "4", label: "Active Rentals", c: "text-emerald-600", b: "bg-emerald-50" },
-    { Icon: ClipboardList, n: "3", label: "Pending Orders", c: "text-amber-600", b: "bg-amber-50" },
-    { Icon: DollarSign, n: "$1,240", label: "Total Earnings", c: "text-[#1b2748]", b: "bg-slate-100" },
+    {
+      Icon: Boxes,
+      n: totalGear.toString(),
+      label: "Total Gear Listed",
+      c: "text-[#e31824]",
+      b: "bg-red-50",
+    },
+    {
+      Icon: RotateCw,
+      n: "4",
+      label: "Active Rentals",
+      c: "text-emerald-600",
+      b: "bg-emerald-50",
+    },
+    {
+      Icon: ClipboardList,
+      n: "3",
+      label: "Pending Orders",
+      c: "text-amber-600",
+      b: "bg-amber-50",
+    },
+    {
+      Icon: DollarSign,
+      n: "$1,240",
+      label: "Total Earnings",
+      c: "text-[#1b2748]",
+      b: "bg-slate-100",
+    },
   ];
   return (
     <div className="min-h-screen bg-slate-50/50 p-6 sm:p-10">
@@ -45,14 +69,14 @@ const ProviderDashboardPage = async () => {
           <div className="flex gap-3">
             <Link
               href="/dashboard/provider/gear/new"
-            className="flex h-10 items-center gap-2 rounded-lg bg-[#e31824] px-4 text-sm font-bold text-white transition-colors hover:bg-[#c41520]"
+              className="flex h-10 items-center gap-2 rounded-lg bg-[#e31824] px-4 text-sm font-bold text-white transition-colors hover:bg-[#c41520]"
             >
               <Plus className="size-4" />
               Add New Gear
             </Link>
             <Link
               href="/dashboard/provider/orders"
-            className="hidden h-10 items-center rounded-lg border border-[#e31824] px-4 text-sm font-bold text-[#e31824] transition-colors hover:bg-red-50 sm:flex"
+              className="hidden h-10 items-center rounded-lg border border-[#e31824] px-4 text-sm font-bold text-[#e31824] transition-colors hover:bg-red-50 sm:flex"
             >
               View All Orders
             </Link>
@@ -71,8 +95,12 @@ const ProviderDashboardPage = async () => {
               <Icon className={`size-6 ${c}`} />
             </span>
             <div>
-              <p className="text-2xl font-extrabold tracking-tight text-[#1b2748]">{n}</p>
-              <p className="mt-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">{label}</p>
+              <p className="text-2xl font-extrabold tracking-tight text-[#1b2748]">
+                {n}
+              </p>
+              <p className="mt-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                {label}
+              </p>
             </div>
           </Card>
         ))}
@@ -89,8 +117,8 @@ const ProviderDashboardPage = async () => {
         </h2>
         <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
           <Table className="min-w-[760px] w-full text-left text-sm">
-          <TableHeader className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-            <TableRow className="hover:bg-transparent">
+            <TableHeader className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+              <TableRow className="hover:bg-transparent">
                 {[
                   "Order ID",
                   "Customer",
@@ -148,8 +176,12 @@ const ProviderDashboardPage = async () => {
                       {id}
                     </Link>
                   </TableCell>
-                  <TableCell className="px-5 py-4 text-[13px] font-medium text-[#1b2748]">{cust}</TableCell>
-                  <TableCell className="px-5 py-4 text-[13px] text-slate-600">{gear}</TableCell>
+                  <TableCell className="px-5 py-4 text-[13px] font-medium text-[#1b2748]">
+                    {cust}
+                  </TableCell>
+                  <TableCell className="px-5 py-4 text-[13px] text-slate-600">
+                    {gear}
+                  </TableCell>
                   <TableCell className="px-5 py-4 text-[13px] text-slate-500">
                     {dates}
                   </TableCell>
@@ -177,4 +209,3 @@ const ProviderDashboardPage = async () => {
 };
 
 export default ProviderDashboardPage;
-
