@@ -1,8 +1,11 @@
+import React from "react";
 import { Star, MessageSquare, ClipboardList } from "lucide-react";
 import PageHeading from "@/components/shared/PageHeading";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
+
+type StatRow = [React.ElementType, string, string, string];
 
 const CustomerReviewsPage = () => {
   const reviews = [
@@ -32,11 +35,11 @@ const CustomerReviewsPage = () => {
     <div className="p-5 sm:p-8">
       <PageHeading title="My Reviews" />
         <div className="grid gap-4 sm:grid-cols-3">
-          {[
+          {([
             [Star, "4.6", "Avg rating given", "text-amber-500"],
             [MessageSquare, "5", "Total Reviews", "text-blue-600"],
             [ClipboardList, "2", "Pending Reviews", "text-[#e31824]"],
-          ].map(([Icon, number, label, color]) => (
+          ] as StatRow[]).map(([Icon, number, label, color]) => (
             <Card
               key={label as string}
               className="flex items-center gap-4 rounded-xl bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)]"

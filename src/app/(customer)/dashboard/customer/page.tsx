@@ -1,3 +1,4 @@
+import React from "react";
 import { Star, Plus, Package, RotateCw, DollarSign } from "lucide-react";
 import StatusBadge from "@/components/shared/StatusBadge";
 import PageHeading from "@/components/shared/PageHeading";
@@ -12,8 +13,10 @@ import {
 import { Card } from "@/components/ui/card";
 import { rentalRows } from "@/lib/data/customerData";
 
+type StatRow = [React.ElementType, string, string, string, string];
+
 const CustomerDashboardPage = () => {
-  const stats = [
+  const stats: StatRow[] = [
     [Package, "12", "Total Rentals", "text-[#e31824]", "bg-red-50"],
     [RotateCw, "2", "Active Rentals", "text-emerald-600", "bg-emerald-50"],
     [DollarSign, "$340", "Total Spent", "text-amber-600", "bg-amber-50"],

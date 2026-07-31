@@ -1,4 +1,8 @@
-import { MapPin, Phone, Check, Circle } from "lucide-react";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import { useParams, useRouter } from "next/navigation";
+import { MapPin, Check, Circle, Package, PackageOpen, Link } from "lucide-react";
 import StatusBadge from "@/components/shared/StatusBadge";
 import PageHeading from "@/components/shared/PageHeading";
 import {
@@ -10,224 +14,370 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  getCustomerRentalOrderByIdAction,
+  getCustomerRentalOrdersAction,
+} from "@/app/(customer)/_actions/rentalActions";
+
+const ORDER_STEPS = [
+  "PLACED",
+  "CONFIRMED",
+  "PAID",
+  "PICKED_UP",
+  "RETURNED",
+  "CANCELLED",
+] as const;
+
+const formatDate = (dateStr: string) =>
+  new Date(dateStr).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+const statusBadgeColors: Record<string, string> = {
+  PLACED: "bg-amber-100 text-amber-700",
+  CONFIRMED: "bg-blue-100 text-blue-700",
+  PAID: "bg-emerald-100 text-emerald-700",
+  PICKED_UP: "bg-purple-100 text-purple-700",
+  RETURNED: "bg-slate-100 text-slate-700",
+  CANCELLED: "bg-red-100 text-red-700",
+};
 
 const CustomerRentalDetailsPage = () => {
-  const steps = [
-    ["PLACED", true],
-    ["CONFIRMED", true],
-    ["PAID", false],
-    ["PICKED_UP", false],
-    ["RETURNED", false],
-    ["CANCELLED", false],
-  ];
+  const params = useParams();
+  const router = useRouter();
+  const orderId = params.id as string;
+
+  const { data: order, isLoading, isError } = useQuery({
+    queryKey: ["rental-order", orderId],
+    queryFn: () => getCustomerRentalOrderByIdAction(orderId),
+    retry: false,
+  });
+
+  const { data: allOrders = [] } = useQuery({
+    queryKey: ["customer-rental-orders"],
+    queryFn: getCustomerRentalOrdersAction,
+  });
+
+  const otherOrders = allOrders.filter((o) => o.id !== orderId);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <div className="size-8 animate-spin rounded-full border-4 border-slate-200 border-t-[#e31824]" />
+      </div>
+    );
+  }
+
+  if (isError || !order) {
+    return (
+      <div className="p-5 sm:p-8">
+        <div className="flex flex-col items-center justify-center rounded-xl bg-white py-20 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+          <Package className="mb-4 size-12 text-slate-300" />
+          <p className="text-lg font-bold text-slate-500">Rental order not found.</p>
+          <Button
+            onClick={() => router.push("/dashboard/customer/rentals")}
+            variant="outline"
+            className="mt-4"
+          >
+            Back to My Rentals
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const gear = order.gearItem;
+
+  const currentStepIndex = (() => {
+    if (order.status === "CANCELLED") return ORDER_STEPS.indexOf("CANCELLED");
+    return ORDER_STEPS.indexOf(order.status as typeof ORDER_STEPS[number]);
+  })();
+
+  const isCancelled = order.status === "CANCELLED";
+  const isPaid = order.status === "PAID" || order.status === "PICKED_UP" || order.status === "RETURNED";
+
+  const startDate = new Date(order.startDate);
+  const endDate = new Date(order.endDate);
+  const days = Math.max(
+    1,
+    Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)),
+  );
+  const totalAmount = parseFloat(order.totalAmount);
+  const pricePerDay = totalAmount / days / order.quantity;
+
+  const steps = ORDER_STEPS.filter((s) => s !== "CANCELLED").map((step) => {
+    const stepIndex = ORDER_STEPS.indexOf(step);
+    return {
+      label: step,
+      completed: stepIndex <= currentStepIndex && !isCancelled,
+      active: stepIndex === currentStepIndex && !isCancelled,
+    };
+  });
+
   return (
     <div className="p-5 sm:p-8">
       <PageHeading
-          crumb="Dashboard  ›  My Rentals  ›  Rental #ORD-2025-0089"
-          title="Rental Details"
-        />
-        <div className="grid gap-6 xl:grid-cols-[3fr_2fr]">
-          <Card className="overflow-hidden rounded-xl bg-white p-0 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border-none">
+        crumb={`Dashboard  ›  My Rentals  ›  #${orderId.slice(0, 8).toUpperCase()}`}
+        title="Rental Details"
+      />
+
+      <div className="grid gap-6 xl:grid-cols-[3fr_2fr]">
+        {/* Left: Gear Info */}
+        <Card className="overflow-hidden rounded-xl bg-white p-0 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border-none">
+          {gear?.image ? (
             <img
-              src="https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=900&auto=format&fit=crop&q=85"
-              alt="Trek X-Caliber mountain bike"
+              src={gear.image}
+              alt={gear.name}
               className="aspect-[21/9] w-full object-cover"
             />
-            <div className="p-6">
-              <div className="flex flex-wrap items-start justify-between gap-4">
+          ) : (
+            <div className="flex aspect-[21/9] w-full items-center justify-center bg-slate-100">
+              <Package className="size-16 text-slate-300" />
+            </div>
+          )}
+          <div className="p-6">
+            <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <h2 className="text-2xl font-extrabold text-[#1b2748]">
-                  Trek X-Caliber Mountain Bike
+                  {gear?.name ?? "Gear Item"}
                 </h2>
                 <p className="mt-1 text-sm text-slate-500">
-                  Trek &nbsp;•&nbsp; Cycling
+                  {gear?.brand}
                 </p>
+                {gear?.address && (
+                  <p className="mt-1.5 flex items-center gap-1.5 text-sm text-slate-500">
+                    <MapPin className="size-3.5 text-[#e31824]" />
+                    {gear.address}
+                  </p>
+                )}
               </div>
-              <StatusBadge status="CONFIRMED" />
+              <StatusBadge status={order.status} />
             </div>
             <div className="mt-6 grid grid-cols-2 gap-y-5 border-t border-slate-100 pt-6 text-sm">
               <p className="text-slate-500">
                 Rental period{" "}
                 <strong className="block pt-1 text-[#1b2748]">
-                  Jul 15, 2025 — Jul 18, 2025
+                  {formatDate(order.startDate)} — {formatDate(order.endDate)}
                 </strong>
               </p>
               <p className="text-slate-500">
                 Duration{" "}
                 <strong className="block pt-1 text-[#1b2748]">
-                  3 days · 1 unit
+                  {days} day{days !== 1 ? "s" : ""} · {order.quantity} unit{order.quantity !== 1 ? "s" : ""}
                 </strong>
               </p>
               <p className="text-slate-500">
                 Price per day{" "}
-                <strong className="block pt-1 text-[#1b2748]">$25.00</strong>
+                <strong className="block pt-1 text-[#1b2748]">
+                  ${pricePerDay.toFixed(2)}
+                </strong>
               </p>
               <p className="text-slate-500">
                 Total amount{" "}
                 <strong className="block pt-1 text-xl text-[#e31824]">
-                  $75.00
+                  ${totalAmount.toFixed(2)}
                 </strong>
               </p>
-              </div>
             </div>
-          </Card>
-          <Card className="h-fit rounded-xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
-            <h2 className="text-xl font-extrabold text-[#1b2748]">
-              Order Summary
-            </h2>
-            <dl className="mt-5 space-y-4 text-sm">
-              <div className="flex justify-between">
-                <dt className="text-slate-500">Order ID</dt>
-                <dd className="font-bold">#ORD-2025-0089</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-slate-500">Placed on</dt>
-                <dd className="font-bold">Jul 13, 2025</dd>
-              </div>
-            </dl>
-            <div className="my-6 border-t border-slate-100" />
-            <p className="font-bold text-[#1b2748]">Adventure Gear Co.</p>
-            <p className="mt-2 flex items-center gap-2 text-sm text-slate-500">
-              <MapPin className="size-4 text-[#e31824]" />
-              Dhanmondi, Dhaka
-            </p>
-            <p className="mt-2 flex items-center gap-2 text-sm text-slate-500">
-              <Phone className="size-4 text-[#e31824]" />
-              +880 1700-111000
-            </p>
-            <div className="my-6 border-t border-slate-100" />
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-[#1b2748]">
-                Payment status
-              </span>
-              <StatusBadge status="PENDING" />
+          </div>
+        </Card>
+
+        {/* Right: Order Summary + Pay Now */}
+        <Card className="h-fit rounded-xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+          <h2 className="text-xl font-extrabold text-[#1b2748]">Order Summary</h2>
+          <dl className="mt-5 space-y-4 text-sm">
+            <div className="flex justify-between">
+              <dt className="text-slate-500">Order ID</dt>
+              <dd className="font-bold">#{orderId.slice(0, 8).toUpperCase()}</dd>
             </div>
+            <div className="flex justify-between">
+              <dt className="text-slate-500">Placed on</dt>
+              <dd className="font-bold">{formatDate(order.createdAt)}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-slate-500">Status</dt>
+              <dd>
+                <span className={`rounded-full px-2.5 py-0.5 text-xs font-extrabold uppercase ${statusBadgeColors[order.status] ?? "bg-slate-100 text-slate-600"}`}>
+                  {order.status}
+                </span>
+              </dd>
+            </div>
+          </dl>
+          <div className="my-6 border-t border-slate-100" />
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-bold text-[#1b2748]">Payment status</span>
+            <StatusBadge status={isPaid ? "PAID" : "PENDING"} />
+          </div>
+
+          {!isPaid && !isCancelled && (
             <a
-              href="/dashboard/customer/payment/ord-2025-0089"
-              className="mt-5 flex h-12 items-center justify-center rounded-lg bg-[#e31824] text-sm font-extrabold text-white hover:bg-[#c41520]"
+              href={`/dashboard/customer/payment/${order.id}`}
+              className="mt-5 flex h-12 items-center justify-center rounded-lg bg-[#e31824] text-sm font-extrabold text-white transition hover:bg-[#c41520]"
             >
               Pay Now
             </a>
-            <p className="mt-4 text-center text-xs font-semibold text-slate-500">
-              🔒 Payments secured by Stripe
-            </p>
-          </Card>
-        </div>
+          )}
+
+          {isCancelled && (
+            <div className="mt-5 rounded-lg bg-red-50 p-3 text-center text-sm font-bold text-red-600">
+              This order has been cancelled.
+            </div>
+          )}
+
+          <p className="mt-4 text-center text-xs font-semibold text-slate-500">
+            🔒 Payments secured by Stripe
+          </p>
+        </Card>
+      </div>
+
+      {/* Order Progress */}
+      {!isCancelled && (
         <section className="mt-8 rounded-xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
-          <h2 className="text-xl font-extrabold text-[#1b2748]">
-            Order Progress
-          </h2>
-          <div className="mt-8 grid grid-cols-3 gap-y-7 md:grid-cols-6">
-            {steps.map(([label, completed], index) => (
+          <h2 className="text-xl font-extrabold text-[#1b2748]">Order Progress</h2>
+          <div className="mt-8 grid grid-cols-3 gap-y-7 md:grid-cols-5">
+            {steps.map((step, index) => (
               <div
-                key={label as string}
+                key={step.label}
                 className="relative text-center before:absolute before:top-5 before:left-1/2 before:hidden before:h-0.5 before:w-full before:bg-slate-200 md:before:block first:before:hidden"
               >
                 <span
-                  className={`relative z-10 mx-auto flex size-10 items-center justify-center rounded-full ${index === 1 ? "border-4 border-blue-200 bg-blue-600 text-white" : completed ? "bg-emerald-500 text-white" : "border-2 border-slate-300 bg-white text-slate-400"}`}
+                  className={`relative z-10 mx-auto flex size-10 items-center justify-center rounded-full ${
+                    step.active
+                      ? "border-4 border-blue-200 bg-blue-600 text-white"
+                      : step.completed
+                      ? "bg-emerald-500 text-white"
+                      : "border-2 border-slate-300 bg-white text-slate-400"
+                  }`}
                 >
-                  {completed ? (
+                  {step.completed ? (
                     <Check className="size-5" />
                   ) : (
                     <Circle className="size-3" />
                   )}
                 </span>
-                <p
-                  className={`mt-3 text-xs font-extrabold ${label === "CANCELLED" ? "text-slate-400 line-through" : "text-[#1b2748]"}`}
-                >
-                  {(label as string).replaceAll("_", " ")}
+                <p className="mt-3 text-xs font-extrabold text-[#1b2748]">
+                  {step.label.replaceAll("_", " ")}
                 </p>
               </div>
             ))}
           </div>
         </section>
-        <section className="mt-8 rounded-xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
-          <h2 className="mb-5 text-xl font-extrabold text-[#1b2748]">
-            Payment History
-          </h2>
+      )}
+
+      {/* Payment History */}
+      <section className="mt-8 rounded-xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+        <h2 className="mb-5 text-xl font-extrabold text-[#1b2748]">Payment History</h2>
+        {order.payments && order.payments.length > 0 ? (
           <div className="overflow-x-auto">
             <Table className="min-w-[600px] w-full text-left text-sm">
               <TableHeader className="border-b border-slate-200 text-xs uppercase tracking-[0.08em] text-slate-500">
                 <TableRow>
-                  {["TXN ID", "Amount", "Provider", "Status", "Date"].map(
-                    (item) => (
-                      <TableHead key={item} className="pb-3">
-                        {item}
-                      </TableHead>
-                    ),
-                  )}
+                  {["TXN ID", "Amount", "Provider", "Status", "Date"].map((item) => (
+                    <TableHead key={item} className="pb-3">{item}</TableHead>
+                  ))}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  <TableCell className="py-4 font-bold">
-                    TXN-2025-0089
-                  </TableCell>
-                  <TableCell className="py-4">$75.00</TableCell>
-                  <TableCell className="py-4">Stripe</TableCell>
-                  <TableCell className="py-4">
-                    <StatusBadge status="PENDING" />
-                  </TableCell>
-                  <TableCell className="py-4 text-slate-500">
-                    Jul 13, 2025
-                  </TableCell>
-                </TableRow>
+                {order.payments.map((payment: {
+                  id: string;
+                  transactionId: string;
+                  amount: string;
+                  paymentProvider: string;
+                  status: string;
+                  paidAt?: string;
+                  createdAt: string;
+                }) => (
+                  <TableRow key={payment.id}>
+                    <TableCell className="py-4 font-bold">
+                      {payment.transactionId.slice(0, 12)}...
+                    </TableCell>
+                    <TableCell className="py-4">${parseFloat(payment.amount).toFixed(2)}</TableCell>
+                    <TableCell className="py-4">{payment.paymentProvider}</TableCell>
+                    <TableCell className="py-4">
+                      <StatusBadge status={payment.status} />
+                    </TableCell>
+                    <TableCell className="py-4 text-slate-500">
+                      {formatDate(payment.paidAt ?? payment.createdAt)}
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </div>
-        </section>
+        ) : (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 py-10 text-center">
+            <PackageOpen className="mb-3 size-10 text-slate-300" />
+            <p className="font-bold text-slate-500">No payments yet</p>
+            <p className="mt-1 text-sm text-slate-400">
+              Complete your payment to see the history here.
+            </p>
+          </div>
+        )}
+      </section>
 
-        {/* Rental History / Other Rentals */}
-        <section className="mt-8">
-          <h2 className="mb-4 text-xl font-extrabold text-[#1b2748]">
-            Other Rentals
-          </h2>
+      {/* Other Rentals */}
+      <section className="mt-8">
+        <h2 className="mb-4 text-xl font-extrabold text-[#1b2748]">Other Rentals</h2>
+        {otherOrders.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white py-14 text-center shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+            <PackageOpen className="mb-3 size-12 text-slate-300" />
+            <p className="font-bold text-slate-500">No other rentals found</p>
+            <p className="mt-1 text-sm text-slate-400">
+              Once you rent more gear, they will appear here.
+            </p>
+            <a
+              href="/dashboard/customer/rent"
+              className="mt-4 inline-flex h-10 items-center gap-2 rounded-lg bg-[#e31824] px-4 text-sm font-bold text-white transition hover:bg-[#c41520]"
+            >
+              Browse Gear
+            </a>
+          </div>
+        ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                id: "ORD-2025-0042",
-                item: "Sony Alpha A7 III",
-                date: "Jun 10 - Jun 12, 2025",
-                status: "COMPLETED",
-                color: "bg-emerald-100 text-emerald-700",
-                image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&auto=format&fit=crop&q=80"
-              },
-              {
-                id: "ORD-2025-0018",
-                item: "REI Camping Tent",
-                date: "May 01 - May 05, 2025",
-                status: "COMPLETED",
-                color: "bg-emerald-100 text-emerald-700",
-                image: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=500&auto=format&fit=crop&q=80"
-              },
-              {
-                id: "ORD-2025-0005",
-                item: "GoPro Hero 12",
-                date: "Jan 15 - Jan 18, 2025",
-                status: "CANCELLED",
-                color: "bg-slate-100 text-slate-700",
-                image: "https://images.unsplash.com/photo-1526779259212-939e64788e3c?w=500&auto=format&fit=crop&q=80"
-              }
-            ].map((rental, idx) => (
-              <Card key={idx} className="overflow-hidden rounded-xl border-none bg-white p-0 shadow-[0_2px_12px_rgba(0,0,0,0.06)] flex flex-col">
+            {otherOrders.map((rental) => (
+              <a
+                key={rental.id}
+                href={`/dashboard/customer/rentals/${rental.id}`}
+                className="overflow-hidden rounded-xl border-none bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] flex flex-col transition hover:shadow-md"
+              >
                 <div className="flex h-24 items-center border-b border-slate-100">
-                  <img src={rental.image} alt={rental.item} className="h-full w-24 shrink-0 object-cover" />
+                  {rental.gearItem?.image ? (
+                    <img
+                      src={rental.gearItem.image}
+                      alt={rental.gearItem.name}
+                      className="h-full w-24 shrink-0 object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-24 shrink-0 items-center justify-center bg-slate-100">
+                      <Package className="size-7 text-slate-300" />
+                    </div>
+                  )}
                   <div className="p-3">
-                    <h3 className="font-bold text-[#1b2748] line-clamp-1">{rental.item}</h3>
-                    <p className="mt-1 text-xs text-slate-500">{rental.date}</p>
+                    <h3 className="font-bold text-[#1b2748] line-clamp-1">
+                      {rental.gearItem?.name ?? "Gear Item"}
+                    </h3>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {formatDate(rental.startDate)} – {formatDate(rental.endDate)}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between bg-slate-50 px-3 py-2.5">
-                  <span className="text-xs font-medium text-slate-500">{rental.id}</span>
-                  <span className={`rounded px-2 py-0.5 text-[10px] font-extrabold uppercase ${rental.color}`}>
+                  <span className="text-xs font-medium text-slate-500">
+                    #{rental.id.slice(0, 8).toUpperCase()}
+                  </span>
+                  <span className={`rounded px-2 py-0.5 text-[10px] font-extrabold uppercase ${statusBadgeColors[rental.status] ?? "bg-slate-100 text-slate-600"}`}>
                     {rental.status}
                   </span>
                 </div>
-              </Card>
+              </a>
             ))}
           </div>
-        </section>
-      </div>
+        )}
+      </section>
+    </div>
   );
 };
 
