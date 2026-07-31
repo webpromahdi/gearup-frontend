@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
-import { Star, Plus, Package, RotateCw, DollarSign } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Star, Plus, Package, RotateCw, DollarSign, PackageOpen } from "lucide-react";
 import Link from "next/link";
 import StatusBadge from "@/components/shared/StatusBadge";
 import PageHeading from "@/components/shared/PageHeading";
@@ -12,21 +15,67 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
-import { rentalRows } from "@/lib/data/customerData";
+import { getCustomerRentalOrdersAction } from "@/app/(customer)/_actions/rentalActions";
+import { getCustomerPaymentsAction } from "@/app/(customer)/_actions/paymentActions";
+import { getCustomerReviewsAction } from "@/app/(customer)/_actions/reviewActions";
 
 type StatRow = [React.ElementType, string, string, string, string];
 
+const formatDate = (dateStr: string) =>
+  new Date(dateStr).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
 const CustomerDashboardPage = () => {
+  const { data: orders = [], isLoading: isLoadingOrders } = useQuery({
+    queryKey: ["customer-rental-orders"],
+    queryFn: getCustomerRentalOrdersAction,
+  });
+
+  const { data: payments = [], isLoading: isLoadingPayments } = useQuery({
+    queryKey: ["customer-payments"],
+    queryFn: getCustomerPaymentsAction,
+  });
+
+  const { data: reviews = [], isLoading: isLoadingReviews } = useQuery({
+    queryKey: ["customer-reviews"],
+    queryFn: getCustomerReviewsAction,
+  });
+
+  const isLoading = isLoadingOrders || isLoadingPayments || isLoadingReviews;
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <div className="size-8 animate-spin rounded-full border-4 border-slate-200 border-t-[#e31824]" />
+      </div>
+    );
+  }
+
+  const activeRentals = orders.filter(
+    (o: any) => o.status !== "RETURNED" && o.status !== "CANCELLED"
+  ).length;
+
+  const totalSpent = payments
+    .filter((p: any) => p.status === "PAID")
+    .reduce((acc: number, p: any) => acc + parseFloat(p.amount), 0);
+
   const stats: StatRow[] = [
-    [Package, "12", "Total Rentals", "text-[#e31824]", "bg-red-50"],
-    [RotateCw, "2", "Active Rentals", "text-emerald-600", "bg-emerald-50"],
-    [DollarSign, "$340", "Total Spent", "text-amber-600", "bg-amber-50"],
-    [Star, "5", "Reviews Given", "text-blue-600", "bg-blue-50"],
+    [Package, orders.length.toString(), "Total Rentals", "text-[#e31824]", "bg-red-50"],
+    [RotateCw, activeRentals.toString(), "Active Rentals", "text-emerald-600", "bg-emerald-50"],
+    [DollarSign, `$${totalSpent.toFixed(2)}`, "Total Spent", "text-amber-600", "bg-amber-50"],
+    [Star, reviews.length.toString(), "Reviews Given", "text-blue-600", "bg-blue-50"],
   ];
+
+  const recentOrders = orders.slice(0, 5);
+  const recentPayments = payments.slice(0, 5);
+
   return (
     <div className="p-5 sm:p-8">
       <PageHeading
-        title="Welcome back, John!"
+        title="Welcome back!"
         action={
           <div className="flex gap-3">
             <Link
@@ -75,148 +124,174 @@ const CustomerDashboardPage = () => {
             View All
           </Link>
         </div>
-        <div className="overflow-x-auto rounded-xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
-          <Table className="min-w-[860px] w-full text-left text-sm">
-            <TableHeader className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-[0.08em] text-slate-500">
-              <TableRow>
-                {[
-                  "Gear Item",
-                  "Rental Period",
-                  "Days",
-                  "Amount",
-                  "Status",
-                  "Action",
-                ].map((item) => (
-                  <TableHead key={item} className="px-5 py-4 font-bold">
-                    {item}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rentalRows.map(
-                ([gear, period, days, amount, status, action, image]) => (
-                  <TableRow
-                    key={gear}
-                    className="border-b border-slate-100 last:border-0"
-                  >
-                    <TableCell className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={image}
-                          alt={gear}
-                          className="size-10 rounded-lg object-cover"
-                        />
-                        <span className="font-bold text-[#1b2748]">
-                          {gear}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-5 py-4 text-slate-600">
-                      {period}
-                    </TableCell>
-                    <TableCell className="px-5 py-4 text-slate-600">
-                      {days}
-                    </TableCell>
-                    <TableCell className="px-5 py-4 font-bold text-[#1b2748]">
-                      {amount}
-                    </TableCell>
-                    <TableCell className="px-5 py-4">
-                      <StatusBadge status={status} />
-                    </TableCell>
-                    <TableCell className="px-5 py-4">
-                      {action === "Pay Now" ? (
-                        <Link
-                          href="/dashboard/customer/payment/ord-2025-0089"
-                          className="inline-flex rounded-lg bg-[#e31824] px-3 py-2 text-xs font-bold text-white"
-                        >
-                          Pay Now
-                        </Link>
-                      ) : (
-                        <Link
-                          href={
-                            action === "Leave Review"
-                              ? "/dashboard/customer/reviews"
-                              : "/dashboard/customer/rentals/ord-2025-0089"
-                          }
-                          className="text-xs font-bold text-[#e31824] hover:underline"
-                        >
-                          {action}
-                        </Link>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ),
-              )}
-            </TableBody>
-          </Table>
-        </div>
+        {recentOrders.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-xl bg-white py-16 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+            <PackageOpen className="mb-4 size-12 text-slate-300" />
+            <p className="font-bold text-slate-500">No recent rentals found</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto rounded-xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+            <Table className="min-w-[860px] w-full text-left text-sm">
+              <TableHeader className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-[0.08em] text-slate-500">
+                <TableRow>
+                  {[
+                    "Gear Item",
+                    "Rental Period",
+                    "Days",
+                    "Amount",
+                    "Status",
+                    "Action",
+                  ].map((item) => (
+                    <TableHead key={item} className="px-5 py-4 font-bold">
+                      {item}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {recentOrders.map((order: any) => {
+                  const startDate = new Date(order.startDate);
+                  const endDate = new Date(order.endDate);
+                  const days = Math.max(
+                    1,
+                    Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+                  );
+
+                  let actionComponent;
+                  if (order.status === "PLACED" || order.status === "CONFIRMED") {
+                    actionComponent = (
+                      <Link
+                        href={`/dashboard/customer/payment/${order.id}`}
+                        className="inline-flex rounded-lg bg-[#e31824] px-3 py-2 text-xs font-bold text-white transition hover:bg-[#c41520]"
+                      >
+                        Pay Now
+                      </Link>
+                    );
+                  } else if (order.status === "RETURNED" && !order.review) {
+                    actionComponent = (
+                      <Link
+                        href="/dashboard/customer/reviews"
+                        className="text-xs font-bold text-[#e31824] hover:underline"
+                      >
+                        Leave Review
+                      </Link>
+                    );
+                  } else {
+                    actionComponent = (
+                      <Link
+                        href={`/dashboard/customer/rentals/${order.id}`}
+                        className="text-xs font-bold text-[#e31824] hover:underline"
+                      >
+                        View Details
+                      </Link>
+                    );
+                  }
+
+                  return (
+                    <TableRow
+                      key={order.id}
+                      className="border-b border-slate-100 last:border-0"
+                    >
+                      <TableCell className="px-5 py-4">
+                        <div className="flex items-center gap-3">
+                          {order.gearItem?.image ? (
+                            <img
+                              src={order.gearItem.image}
+                              alt={order.gearItem.name}
+                              className="size-10 rounded-lg object-cover"
+                            />
+                          ) : (
+                            <div className="flex size-10 items-center justify-center rounded-lg bg-slate-100">
+                              <Package className="size-5 text-slate-300" />
+                            </div>
+                          )}
+                          <span className="font-bold text-[#1b2748] line-clamp-1">
+                            {order.gearItem?.name}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-5 py-4 text-slate-600">
+                        {formatDate(order.startDate)} – {formatDate(order.endDate)}
+                      </TableCell>
+                      <TableCell className="px-5 py-4 text-slate-600">
+                        {days} day{days > 1 ? "s" : ""}
+                      </TableCell>
+                      <TableCell className="px-5 py-4 font-bold text-[#1b2748]">
+                        ${parseFloat(order.totalAmount).toFixed(2)}
+                      </TableCell>
+                      <TableCell className="px-5 py-4">
+                        <StatusBadge status={order.status} />
+                      </TableCell>
+                      <TableCell className="px-5 py-4">
+                        {actionComponent}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </section>
+      
       <section className="mt-8">
         <h2 className="mb-4 text-xl font-extrabold text-[#1b2748]">
           Recent Payments
         </h2>
-        <div className="overflow-x-auto rounded-xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
-          <Table className="min-w-[650px] w-full text-left text-sm">
-            <TableHeader className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-[0.08em] text-slate-500">
-              <TableRow>
-                {[
-                  "Transaction ID",
-                  "Gear",
-                  "Amount",
-                  "Method",
-                  "Status",
-                  "Date",
-                ].map((item) => (
-                  <TableHead key={item} className="px-5 py-4">
-                    {item}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {[
-                [
-                  "TXN-2025-0089",
-                  "Trek MTB",
-                  "$75.00",
-                  "Stripe",
-                  "Jul 15, 2025",
-                ],
-                [
-                  "TXN-2025-0071",
-                  "GoPro Kit",
-                  "$30.00",
-                  "Stripe",
-                  "Jul 10, 2025",
-                ],
-                ["TXN-2025-0065", "Kayak", "$70.00", "Stripe", "Jul 1, 2025"],
-              ].map(([id, gear, amount, method, date]) => (
-                <TableRow
-                  key={id}
-                  className="border-b border-slate-100 last:border-0"
-                >
-                  <TableCell className="px-5 py-4 font-bold text-[#1b2748]">
-                    {id}
-                  </TableCell>
-                  <TableCell className="px-5 py-4">{gear}</TableCell>
-                  <TableCell className="px-5 py-4 font-bold">
-                    {amount}
-                  </TableCell>
-                  <TableCell className="px-5 py-4">{method}</TableCell>
-                  <TableCell className="px-5 py-4">
-                    <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-extrabold text-emerald-700">
-                      PAID
-                    </span>
-                  </TableCell>
-                  <TableCell className="px-5 py-4 text-slate-500">
-                    {date}
-                  </TableCell>
+        {recentPayments.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-xl bg-white py-16 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+            <DollarSign className="mb-4 size-12 text-slate-300" />
+            <p className="font-bold text-slate-500">No recent payments found</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto rounded-xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+            <Table className="min-w-[650px] w-full text-left text-sm">
+              <TableHeader className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-[0.08em] text-slate-500">
+                <TableRow>
+                  {[
+                    "Transaction ID",
+                    "Gear",
+                    "Amount",
+                    "Method",
+                    "Status",
+                    "Date",
+                  ].map((item) => (
+                    <TableHead key={item} className="px-5 py-4">
+                      {item}
+                    </TableHead>
+                  ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {recentPayments.map((payment: any) => (
+                  <TableRow
+                    key={payment.id}
+                    className="border-b border-slate-100 last:border-0"
+                  >
+                    <TableCell className="px-5 py-4 font-bold text-[#1b2748]">
+                      {payment.transactionId.slice(0, 12)}...
+                    </TableCell>
+                    <TableCell className="px-5 py-4">
+                      {payment.rentalOrder?.gearItem?.name ?? "Gear Item"}
+                    </TableCell>
+                    <TableCell className="px-5 py-4 font-bold">
+                      ${parseFloat(payment.amount).toFixed(2)}
+                    </TableCell>
+                    <TableCell className="px-5 py-4">
+                      {payment.paymentProvider}
+                    </TableCell>
+                    <TableCell className="px-5 py-4">
+                      <StatusBadge status={payment.status} />
+                    </TableCell>
+                    <TableCell className="px-5 py-4 text-slate-500">
+                      {formatDate(payment.paidAt || payment.createdAt)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </section>
     </div>
   );

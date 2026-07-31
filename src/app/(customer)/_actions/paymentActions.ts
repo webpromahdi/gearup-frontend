@@ -39,3 +39,22 @@ export const createCheckoutSessionAction = async (
 
   return result.data;
 };
+
+export const getCustomerPaymentsAction = async () => {
+  const accessToken = await getCustomerToken();
+
+  const res = await fetch(`${process.env.BACKEND_API_URL}/api/payments`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    next: { tags: ["customer-payments"] },
+  });
+
+  const result = await res.json();
+  if (!res.ok) {
+    throw new Error(result.message || "Failed to fetch payments");
+  }
+
+  return result.data.payments;
+};
