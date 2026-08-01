@@ -24,15 +24,9 @@ export const GuestActions = ({ mobile = false }: { mobile?: boolean }) => {
       <div className="grid gap-3">
         <Link
           href="/login"
-          className="flex h-11 w-full items-center justify-center rounded-lg border border-[#e31824] bg-white text-sm font-bold text-[#e31824] transition hover:bg-red-50"
-        >
-          Log In
-        </Link>
-        <Link
-          href="/register"
           className="flex h-11 w-full items-center justify-center rounded-lg bg-[#e31824] text-sm font-bold text-white transition hover:bg-[#c41520]"
         >
-          Sign Up
+          Log In
         </Link>
       </div>
     );
@@ -42,15 +36,9 @@ export const GuestActions = ({ mobile = false }: { mobile?: boolean }) => {
     <div className="flex items-center gap-3">
       <Link
         href="/login"
-        className="rounded-lg px-3 py-2 text-sm font-bold text-[#1a1a2e] transition hover:text-[#e31824]"
-      >
-        Log In
-      </Link>
-      <Link
-        href="/register"
         className="flex h-10 items-center rounded-lg bg-[#e31824] px-5 text-sm font-bold text-white transition hover:bg-[#c41520]"
       >
-        Sign Up
+        Log In
       </Link>
     </div>
   );
