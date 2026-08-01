@@ -20,6 +20,21 @@ export type CustomerGear = {
     name: string;
     description: string;
   };
+  provider?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  reviews?: {
+    id: string;
+    rating: number;
+    comment: string | null;
+    createdAt: string;
+    customer?: {
+      id: string;
+      name: string;
+    };
+  }[];
 };
 
 type GearApiResponse = {
@@ -46,4 +61,23 @@ export const getPublicGearsAction = async (): Promise<CustomerGear[]> => {
   }
 
   return result.data?.gearItems ?? [];
+};
+
+export const getSingleGearAction = async (
+  id: string,
+): Promise<CustomerGear | null> => {
+  const apiUrl = process.env.BACKEND_API_URL;
+  if (!apiUrl) throw new Error("BACKEND_API_URL is not configured");
+
+  const res = await fetch(`${apiUrl}/api/gear/${id}`, {
+    cache: "no-store",
+  });
+
+  const result = await res.json();
+
+  if (!res.ok) {
+    if (res.status === 404) return null;
+    throw new Error(result.message || "Failed to fetch gear item");
+  }
+  return result.data?.gearItem as CustomerGear;
 };

@@ -320,7 +320,7 @@ const AdminDashboardPage = () => {
 
       {/* Tables Section */}
       <div className="mt-10 grid gap-6 xl:grid-cols-2">
-        <section className="flex flex-col h-full">
+        <section className="flex flex-col h-full min-w-0">
           <div className="mb-4 flex shrink-0 items-center justify-between">
             <h2 className="text-base font-bold tracking-tight text-[#1b2748]">
               Recent Users
@@ -396,7 +396,7 @@ const AdminDashboardPage = () => {
             </ScrollArea>
           </div>
         </section>
-        <section className="flex flex-col h-full">
+        <section className="flex flex-col h-full min-w-0">
           <div className="mb-4 flex shrink-0 items-center justify-between">
             <h2 className="text-base font-bold tracking-tight text-[#1b2748]">
               Recent Rentals
