@@ -109,7 +109,7 @@ const CustomerReviewsPage = () => {
       : "0.0";
 
   return (
-    <div className="p-5 sm:p-8">
+    <div className="p-6 sm:p-10">
       <PageHeading title="My Reviews" />
 
       <div className="grid gap-4 sm:grid-cols-3">

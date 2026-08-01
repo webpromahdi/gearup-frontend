@@ -86,7 +86,7 @@ const BookingPage = () => {
 
   if (!gear) {
     return (
-      <div className="p-5 sm:p-8">
+      <div className="p-6 sm:p-10">
         <div className="flex flex-col items-center justify-center rounded-xl bg-white py-20 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
           <Package className="mb-4 size-12 text-slate-300" />
           <p className="text-lg font-bold text-slate-500">Gear not found.</p>
@@ -103,7 +103,7 @@ const BookingPage = () => {
   }
 
   return (
-    <div className="p-5 sm:p-8">
+    <div className="p-6 sm:p-10">
       <PageHeading
         crumb={`Dashboard  ›  Rent Gear  ›  ${gear.name}`}
         title="Book This Gear"

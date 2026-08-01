@@ -68,7 +68,7 @@ const CustomerRentGearPage = () => {
   }
 
   return (
-    <div className="p-5 sm:p-8">
+    <div className="p-6 sm:p-10">
       <PageHeading
         title="Rent New Gear"
         subtitle="Discover and rent high-quality gear for your next adventure."

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { PackageOpen } from "lucide-react";
+import { ClipboardList, PackageOpen, CheckCircle2, XCircle, RotateCw } from "lucide-react";
 import StatusBadge from "@/components/shared/StatusBadge";
 import PageHeading from "@/components/shared/PageHeading";
 import { Card } from "@/components/ui/card";
@@ -27,6 +27,17 @@ const STATUS_TABS = [
 ] as const;
 type StatusTab = (typeof STATUS_TABS)[number];
 
+// User-friendly display names
+const STATUS_DISPLAY: Record<string, string> = {
+  All: "All",
+  PLACED: "Placed",
+  CONFIRMED: "Confirmed",
+  PAID: "Paid",
+  PICKED_UP: "Picked Up",
+  RETURNED: "Returned",
+  CANCELLED: "Cancelled",
+};
+
 const formatDate = (dateStr: string) =>
   new Date(dateStr).toLocaleDateString("en-US", {
     month: "short",
@@ -47,48 +58,77 @@ const AdminRentalsPage = () => {
       ? rentals
       : rentals.filter((r: any) => r.status === activeTab);
 
-  const stats = [
-    ["Total", rentals.length, "text-[#1b2748]"],
-    [
-      "Active",
-      rentals.filter((r: any) =>
+  const statCards = [
+    {
+      label: "Total",
+      value: rentals.length,
+      icon: ClipboardList,
+      iconBg: "bg-slate-100",
+      iconColor: "text-[#1b2748]",
+      accent: "bg-[#1b2748]",
+    },
+    {
+      label: "Active",
+      value: rentals.filter((r: any) =>
         ["PLACED", "CONFIRMED", "PAID", "PICKED_UP"].includes(r.status),
       ).length,
-      "text-blue-600",
-    ],
-    [
-      "Completed",
-      rentals.filter((r: any) => r.status === "RETURNED").length,
-      "text-emerald-600",
-    ],
-    [
-      "Cancelled",
-      rentals.filter((r: any) => r.status === "CANCELLED").length,
-      "text-[#e31824]",
-    ],
+      icon: RotateCw,
+      iconBg: "bg-blue-50",
+      iconColor: "text-blue-600",
+      accent: "bg-blue-600",
+    },
+    {
+      label: "Completed",
+      value: rentals.filter((r: any) => r.status === "RETURNED").length,
+      icon: CheckCircle2,
+      iconBg: "bg-emerald-50",
+      iconColor: "text-emerald-600",
+      accent: "bg-emerald-600",
+    },
+    {
+      label: "Cancelled",
+      value: rentals.filter((r: any) => r.status === "CANCELLED").length,
+      icon: XCircle,
+      iconBg: "bg-red-50",
+      iconColor: "text-[#e31824]",
+      accent: "bg-[#e31824]",
+    },
   ];
 
   return (
     <div className="p-5 sm:p-8">
       <PageHeading title="Rental Management" />
       <div className="grid gap-4 sm:grid-cols-4">
-        {stats.map(([label, n, c]) => (
-          <Card key={label as string} className="rounded-xl bg-white p-5 shadow-sm">
-            <p className={`text-2xl font-extrabold ${c}`}>{n}</p>
-            <p className="mt-1 text-sm text-slate-500">{label}</p>
+        {statCards.map(({ label, value, icon: Icon, iconBg, iconColor, accent }) => (
+          <Card key={label} className="relative overflow-hidden rounded-xl bg-white p-5 shadow-sm">
+            <div className={`absolute left-0 top-0 h-full w-1 ${accent}`} />
+            <div className="flex items-center gap-4">
+              <span className={`flex size-10 items-center justify-center rounded-full ${iconBg}`}>
+                <Icon className={`size-5 ${iconColor}`} />
+              </span>
+              <div>
+                <p className="text-2xl font-extrabold text-[#1b2748]">{value}</p>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{label}</p>
+              </div>
+            </div>
           </Card>
         ))}
       </div>
-      <div className="mt-8 flex gap-5 overflow-x-auto border-b border-slate-200">
-        {STATUS_TABS.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`whitespace-nowrap border-b-2 pb-3 text-sm font-bold ${activeTab === tab ? "border-[#e31824] text-[#e31824]" : "border-transparent text-slate-500"}`}
-          >
-            {tab}
-          </button>
-        ))}
+      {/* P3-1: Wrapped in relative container for gradient scroll-hint */}
+      <div className="relative mt-8">
+        <div className="flex gap-5 overflow-x-auto border-b border-slate-200 scrollbar-none">
+          {STATUS_TABS.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`whitespace-nowrap border-b-2 pb-3 text-sm font-bold ${activeTab === tab ? "border-[#e31824] text-[#e31824]" : "border-transparent text-slate-500 hover:text-[#1b2748]"}`}
+            >
+              {STATUS_DISPLAY[tab]}
+            </button>
+          ))}
+        </div>
+        {/* Right gradient fade — hints more tabs off screen on mobile */}
+        <div className="pointer-events-none absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-[#f5f6fa] to-transparent sm:hidden" />
       </div>
 
       {isLoading ? (
@@ -110,12 +150,10 @@ const AdminRentalsPage = () => {
                   "Customer",
                   "Gear Item",
                   "Provider",
-                  "Start",
-                  "End",
+                  "Period",
                   "Days",
                   "Amount",
                   "Status",
-                  "Created",
                 ].map((h, i) => (
                   <TableHead key={i} className="px-5 py-3.5">
                     {h}
@@ -151,11 +189,8 @@ const AdminRentalsPage = () => {
                     <TableCell className="px-5 py-4 text-[13px] text-slate-600">
                       {order.gearItem?.provider?.name ?? "—"}
                     </TableCell>
-                    <TableCell className="px-5 py-4 text-[13px] text-slate-500">
-                      {formatDate(order.startDate)}
-                    </TableCell>
-                    <TableCell className="px-5 py-4 text-[13px] text-slate-500">
-                      {formatDate(order.endDate)}
+                    <TableCell className="px-5 py-4 text-[13px] text-slate-500 whitespace-nowrap">
+                      {formatDate(order.startDate)} – {formatDate(order.endDate)}
                     </TableCell>
                     <TableCell className="px-5 py-4 text-[13px] text-slate-500">
                       {days}d
@@ -165,9 +200,6 @@ const AdminRentalsPage = () => {
                     </TableCell>
                     <TableCell className="px-5 py-4">
                       <StatusBadge status={order.status} />
-                    </TableCell>
-                    <TableCell className="px-5 py-4 text-[13px] text-slate-500">
-                      {formatDate(order.createdAt)}
                     </TableCell>
                   </TableRow>
                 );

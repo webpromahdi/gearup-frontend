@@ -24,7 +24,7 @@ const CustomerProfilePage = () => {
 
   if (isLoading) {
     return (
-      <div className="p-5 sm:p-8">
+      <div className="p-6 sm:p-10">
         <div className="mb-8 h-8 w-48 animate-pulse rounded-lg bg-slate-200" />
         <div className="space-y-6">
           <div className="h-40 animate-pulse rounded-2xl bg-slate-200" />
@@ -39,7 +39,7 @@ const CustomerProfilePage = () => {
   const user = data.data.profile;
 
   return (
-    <div className="p-5 sm:p-8">
+    <div className="p-6 sm:p-10">
       <PageHeading title="My Profile" />
       <div className="space-y-6">
         <ProfileCard user={user} />

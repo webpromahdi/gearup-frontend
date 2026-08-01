@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, CheckCircle, XCircle, Mountain } from "lucide-react";
-import ConditionBadge from "@/components/shared/ConditionBadge";
+import { Search, Mountain } from "lucide-react";
 import Availability from "@/components/shared/Availability";
+import ConditionBadge from "@/components/shared/ConditionBadge";
 import PageHeading from "@/components/shared/PageHeading";
 import { Input } from "@/components/ui/input";
 import {
@@ -62,7 +62,7 @@ const AdminGearPage = () => {
             placeholder="Search gear..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-10 w-full rounded-lg border border-slate-200 pl-9 pr-3 text-sm"
+            className="h-10 w-full rounded-lg border border-slate-200 pl-9 pr-3 text-sm focus:border-[#e31824] focus:ring-2 focus:ring-red-100"
           />
         </label>
         <select
@@ -76,12 +76,13 @@ const AdminGearPage = () => {
             </option>
           ))}
         </select>
+        {/* Reset: auto width, not full-width on mobile */}
         <button
           onClick={() => {
             setSearch("");
             setCategoryFilter("All");
           }}
-          className="h-10 rounded-lg border border-slate-200 px-3 text-sm font-bold text-[#e31824] hover:bg-red-50"
+          className="h-10 w-auto rounded-lg border border-slate-200 px-4 text-sm font-bold text-[#e31824] hover:bg-red-50 justify-self-start md:justify-self-auto"
         >
           Reset
         </button>
@@ -160,11 +161,7 @@ const AdminGearPage = () => {
                     <ConditionBadge condition={gear.condition} />
                   </TableCell>
                   <TableCell className="px-4 py-3">
-                    {gear.isAvailable ? (
-                      <CheckCircle className="size-5 text-emerald-600" />
-                    ) : (
-                      <XCircle className="size-5 text-red-500" />
-                    )}
+                    <Availability active={gear.isAvailable} />
                   </TableCell>
                   <TableCell className="px-4 py-3 text-slate-500">
                     {formatDate(gear.createdAt)}

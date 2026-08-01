@@ -68,7 +68,7 @@ const CustomerPaymentPage = () => {
 
   if (isError || !order) {
     return (
-      <div className="p-5 sm:p-8">
+      <div className="p-6 sm:p-10">
         <div className="flex flex-col items-center justify-center rounded-xl bg-white py-20 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
           <Package className="mb-4 size-12 text-slate-300" />
           <p className="text-lg font-bold text-slate-500">Order not found.</p>
@@ -82,7 +82,7 @@ const CustomerPaymentPage = () => {
 
   if (order.status === "PAID" || order.status === "RETURNED") {
     return (
-      <div className="p-5 sm:p-8">
+      <div className="p-6 sm:p-10">
         <div className="flex flex-col items-center justify-center rounded-xl bg-white py-20 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
           <CheckCircle2 className="mb-4 size-12 text-emerald-500" />
           <p className="text-lg font-bold text-slate-700">This order has already been paid!</p>
@@ -106,7 +106,7 @@ const CustomerPaymentPage = () => {
   const pricePerDay = gear ? (totalAmount / days / order.quantity) : 0;
 
   return (
-    <div className="p-5 sm:p-8">
+    <div className="p-6 sm:p-10">
       <PageHeading
         crumb={`Dashboard  ›  My Rentals  ›  Pay for #${orderId.slice(0, 8).toUpperCase()}`}
         title="Complete Payment"

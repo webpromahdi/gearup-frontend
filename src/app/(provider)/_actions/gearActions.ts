@@ -71,7 +71,7 @@ export const getSingleGearAction = async (id: string) => {
   }
 
   const res = await fetch(
-    `${process.env.BACKEND_API_URL}/api/gears/${id}`,
+    `${process.env.BACKEND_API_URL}/api/gear/${id}`,
     {
       cache: "no-store",
       headers: {

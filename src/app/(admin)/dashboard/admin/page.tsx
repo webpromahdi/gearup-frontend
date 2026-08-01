@@ -251,14 +251,29 @@ const AdminDashboardPage = () => {
               </span>
             </h2>
           </div>
-          <div className="mt-9 flex h-48 items-end gap-2 border-b border-slate-100 pb-1">
+          <div className="mt-9 flex h-48 items-end gap-[3px] border-b border-slate-100 pb-1">
             {chartData.barHeights.map((height, i) => (
+              <div key={i} className="flex flex-1 flex-col items-center gap-0.5">
+                <div
+                  title={chartData.last18Days[i]}
+                  style={{ height }}
+                  className={`w-full rounded-t-sm transition-all duration-500 ${i === 17 ? "bg-[#e31824]" : "bg-[#1b2748] hover:bg-blue-800"}`}
+                />
+              </div>
+            ))}
+          </div>
+          {/* P3-7: X-axis date labels — show every 3rd day to avoid crowding */}
+          <div className="mt-1 flex gap-[3px] overflow-hidden">
+            {chartData.last18Days.map((day, i) => (
               <div
                 key={i}
-                title={chartData.last18Days[i]}
-                style={{ height }}
-                className={`flex-1 rounded-t-sm transition-all duration-500 ${i === 17 ? "bg-[#e31824]" : "bg-[#1b2748] hover:bg-blue-800"}`}
-              />
+                className="flex-1 text-center text-[8px] text-slate-400"
+                title={day}
+              >
+                {i % 3 === 0
+                  ? new Date(day).toLocaleDateString("en-US", { month: "numeric", day: "numeric" })
+                  : ""}
+              </div>
             ))}
           </div>
         </Card>
@@ -275,7 +290,10 @@ const AdminDashboardPage = () => {
             >
               <div className="flex size-28 flex-col items-center justify-center rounded-full bg-white text-center">
                 <span className="text-xl font-extrabold text-[#1b2748]">
-                  ${(chartData.totalRevenue / 1000).toFixed(1)}k
+                  {/* P3-8: Smart formatter — exact $ for <1000, 'k' shorthand for >=1000 */}
+                  {chartData.totalRevenue >= 1000
+                    ? `$${(chartData.totalRevenue / 1000).toFixed(1)}k`
+                    : `$${chartData.totalRevenue.toFixed(0)}`}
                 </span>
                 <span className="text-xs font-medium text-slate-400 mt-0.5">
                   Total Revenue
@@ -309,7 +327,7 @@ const AdminDashboardPage = () => {
             </h2>
             <Link
               href="/dashboard/admin/users"
-              className="text-[13px] font-semibold text-blue-600 hover:underline"
+              className="text-[13px] font-semibold text-[#e31824] hover:underline"
             >
               View all
             </Link>
@@ -385,7 +403,7 @@ const AdminDashboardPage = () => {
             </h2>
             <Link
               href="/dashboard/admin/rentals"
-              className="text-[13px] font-semibold text-blue-600 hover:underline"
+              className="text-[13px] font-semibold text-[#e31824] hover:underline"
             >
               View all
             </Link>

@@ -18,6 +18,7 @@ import { Card } from "@/components/ui/card";
 import { getCustomerRentalOrdersAction } from "@/app/(customer)/_actions/rentalActions";
 import { getCustomerPaymentsAction } from "@/app/(customer)/_actions/paymentActions";
 import { getCustomerReviewsAction } from "@/app/(customer)/_actions/reviewActions";
+import { getMyProfile } from "@/lib/api/auth.api";
 
 type StatRow = [React.ElementType, string, string, string, string];
 
@@ -43,6 +44,13 @@ const CustomerDashboardPage = () => {
     queryKey: ["customer-reviews"],
     queryFn: getCustomerReviewsAction,
   });
+
+  const { data: profileData } = useQuery({
+    queryKey: ["my-profile"],
+    queryFn: getMyProfile,
+  });
+
+  const userName = profileData?.data?.profile?.name ?? null;
 
   const isLoading = isLoadingOrders || isLoadingPayments || isLoadingReviews;
 
@@ -73,21 +81,23 @@ const CustomerDashboardPage = () => {
   const recentPayments = payments.slice(0, 5);
 
   return (
-    <div className="p-5 sm:p-8">
+    <div className="p-6 sm:p-10">
       <PageHeading
-        title="Welcome back!"
+        title={userName ? `Welcome back, ${userName.split(" ")[0]}! 👋` : "Welcome back! 👋"}
+        subtitle="Here's an overview of your rental activity."
         action={
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
+            {/* P3-3: flex-wrap so both buttons appear on mobile */}
             <Link
               href="/dashboard/customer/rent"
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#e31824] px-4 text-sm font-bold text-white hover:bg-[#c41520]"
+              className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#e31824] px-4 text-sm font-bold text-white transition-colors hover:bg-[#c41520]"
             >
               <Plus className="size-4" />
               Rent New Gear
             </Link>
             <Link
               href="/dashboard/customer/rentals"
-              className="hidden h-10 items-center rounded-lg border border-[#e31824] px-4 text-sm font-bold text-[#e31824] hover:bg-red-50 sm:inline-flex"
+              className="inline-flex h-10 items-center rounded-lg border border-[#e31824] px-4 text-sm font-bold text-[#e31824] transition-colors hover:bg-red-50"
             >
               View All Rentals →
             </Link>
@@ -107,7 +117,7 @@ const CustomerDashboardPage = () => {
             </span>
             <div>
               <p className="text-2xl font-extrabold text-[#1b2748]">{number}</p>
-              <p className="text-sm text-slate-500">{label}</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{label as string}</p>
             </div>
           </Card>
         ))}
@@ -121,7 +131,7 @@ const CustomerDashboardPage = () => {
             href="/dashboard/customer/rentals"
             className="text-sm font-bold text-[#e31824] hover:underline"
           >
-            View All
+            View all
           </Link>
         </div>
         {recentOrders.length === 0 ? (
