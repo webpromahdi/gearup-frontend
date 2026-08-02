@@ -5,6 +5,7 @@ import { Search, UserPlus, MoreVertical, Users } from "lucide-react";
 import PageHeading from "@/components/shared/PageHeading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useSearchAndSort } from "@/app/hooks/useSearchAndSort";
 import {
   Table,
   TableBody,
@@ -45,7 +46,7 @@ const RoleBadge = ({ role }: { role: string }) => {
 };
 
 const AdminUsersPage = () => {
-  const [search, setSearch] = useState("");
+  const { localSearch, handleSearchChange, searchTerm } = useSearchAndSort();
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("All");
 
   const queryClient = useQueryClient();
@@ -70,8 +71,8 @@ const AdminUsersPage = () => {
 
   const filtered = users.filter((u: any) => {
     const matchesSearch =
-      u.name?.toLowerCase().includes(search.toLowerCase()) ||
-      u.email?.toLowerCase().includes(search.toLowerCase());
+      u.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.email?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = roleFilter === "All" || u.role === roleFilter;
     return matchesSearch && matchesRole;
   });
@@ -99,8 +100,8 @@ const AdminUsersPage = () => {
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
             <Input
               placeholder="Search by name or email..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={localSearch}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="h-10 w-full rounded-lg border border-slate-200 pl-9 pr-3 text-sm"
             />
           </label>

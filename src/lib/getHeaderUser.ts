@@ -12,13 +12,19 @@ export async function getHeaderUser(): Promise<HeaderUser | undefined> {
     if (!decoded) return undefined;
 
     const role = decoded.role as string;
-    if (role !== "CUSTOMER" && role !== "PROVIDER") return undefined;
+    if (role !== "CUSTOMER" && role !== "PROVIDER" && role !== "ADMIN")
+      return undefined;
 
     return {
       name: decoded.name ?? decoded.email ?? "User",
       email: decoded.email ?? "",
       image: decoded.image ?? undefined,
-      role: role === "CUSTOMER" ? "customer" : "provider",
+      role:
+        role === "CUSTOMER"
+          ? "customer"
+          : role === "PROVIDER"
+            ? "provider"
+            : "admin",
     };
   } catch {
     return undefined;

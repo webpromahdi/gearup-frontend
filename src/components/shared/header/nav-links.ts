@@ -44,6 +44,13 @@ export const accountLinks: Record<UserRole, AccountLink[]> = {
     },
     { label: "Settings", href: "/profile#settings", icon: Settings },
   ],
+  admin: [
+    { label: "My Profile", href: "/profile", icon: UserRound },
+    { label: "Admin Dashboard", href: "/dashboard/admin", icon: LayoutDashboard },
+    { label: "Manage Users", href: "/dashboard/admin/users", icon: UserRound },
+    { label: "Manage Gear", href: "/dashboard/admin/gear", icon: Package },
+    { label: "Settings", href: "/profile#settings", icon: Settings },
+  ],
 };
 
 export const logoutLink = { label: "Log Out", href: "/", icon: DoorOpen };

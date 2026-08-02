@@ -6,6 +6,7 @@ import Availability from "@/components/shared/Availability";
 import ConditionBadge from "@/components/shared/ConditionBadge";
 import PageHeading from "@/components/shared/PageHeading";
 import { Input } from "@/components/ui/input";
+import { useSearchAndSort } from "@/app/hooks/useSearchAndSort";
 import {
   Table,
   TableBody,
@@ -25,8 +26,8 @@ const formatDate = (dateStr: string) =>
   });
 
 const AdminGearPage = () => {
-  const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("All");
+  const { localSearch, handleSearchChange, searchTerm, handleFilterChange, searchParams } = useSearchAndSort();
+  const categoryFilter = searchParams.get("category") || "All";
 
   const { data: gearItems = [], isLoading } = useQuery({
     queryKey: ["admin-gear"],
@@ -42,8 +43,8 @@ const AdminGearPage = () => {
 
   const filtered = gearItems.filter((g: any) => {
     const matchesSearch =
-      g.name?.toLowerCase().includes(search.toLowerCase()) ||
-      g.brand?.toLowerCase().includes(search.toLowerCase());
+      g.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      g.brand?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory =
       categoryFilter === "All" || g.category?.name === categoryFilter;
     return matchesSearch && matchesCategory;
@@ -60,14 +61,14 @@ const AdminGearPage = () => {
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
           <Input
             placeholder="Search gear..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            value={localSearch}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="h-10 w-full rounded-lg border border-slate-200 pl-9 pr-3 text-sm focus:border-[#e31824] focus:ring-2 focus:ring-red-100"
           />
         </label>
         <select
           value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
+          onChange={(e) => handleFilterChange("category", e.target.value)}
           className="h-10 rounded-lg border border-slate-200 px-3 text-sm"
         >
           {categories.map((c) => (
@@ -76,11 +77,10 @@ const AdminGearPage = () => {
             </option>
           ))}
         </select>
-        {/* Reset: auto width, not full-width on mobile */}
         <button
           onClick={() => {
-            setSearch("");
-            setCategoryFilter("All");
+            handleSearchChange("");
+            handleFilterChange("category", "All");
           }}
           className="h-10 w-auto rounded-lg border border-slate-200 px-4 text-sm font-bold text-[#e31824] hover:bg-red-50 justify-self-start md:justify-self-auto"
         >
@@ -121,7 +121,7 @@ const AdminGearPage = () => {
                 ))}
               </TableRow>
             </TableHeader>
-            <TableBody>
+            <TableBody className="divide-y divide-slate-100 bg-white">
               {filtered.map((gear: any, i: number) => (
                 <TableRow
                   key={gear.id}

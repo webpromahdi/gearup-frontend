@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import Availability from "@/components/shared/Availability";
 import Link from "next/link";
+import { useSearchAndSort } from "@/app/hooks/useSearchAndSort";
 import { useQuery } from "@tanstack/react-query";
 import { getProviderGearAction } from "@/app/(provider)/_actions/gearActions";
 
@@ -27,12 +28,29 @@ const ProviderGearPage = () => {
     queryFn: getProviderGearAction,
   });
 
+  const { localSearch, handleSearchChange, searchTerm, handleFilterChange, searchParams } = useSearchAndSort();
+  
+  const selectedCategory = searchParams.get("category") || "all";
+  const selectedCondition = searchParams.get("condition") || "all";
+
   const gearData = useMemo(() => {
-    if (Array.isArray(data?.data?.gearItems)) return data.data.gearItems;
-    if (Array.isArray(data?.data)) return data.data;
-    if (Array.isArray(data)) return data;
-    return [];
-  }, [data]);
+    let items = [];
+    if (Array.isArray(data?.data?.gearItems)) items = data.data.gearItems;
+    else if (Array.isArray(data?.data)) items = data.data;
+    else if (Array.isArray(data)) items = data;
+
+    return items.filter((g: any) => {
+      const matchesSearch =
+        g.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        g.brand?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory =
+        selectedCategory === "all" || g.category?.name?.toLowerCase() === selectedCategory.toLowerCase();
+      const matchesCondition =
+        selectedCondition === "all" || g.condition === selectedCondition;
+
+      return matchesSearch && matchesCategory && matchesCondition;
+    });
+  }, [data, searchTerm, selectedCategory, selectedCondition]);
 
   const totalPages = Math.ceil(gearData.length / PAGE_SIZE);
 
@@ -55,27 +73,36 @@ const ProviderGearPage = () => {
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
           <Input
             placeholder="Search your gear..."
+            value={localSearch}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-sm focus:border-[#e31824] focus:ring-2 focus:ring-red-100"
           />
         </label>
         {/* Two filter dropdowns in a 2-col grid on mobile */}
         <div className="grid grid-cols-2 gap-3 sm:col-span-2 sm:contents">
-          <Select defaultValue="all">
+          <Select value={selectedCategory} onValueChange={(val) => handleFilterChange("category", val)}>
             <SelectTrigger className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus:border-[#e31824] focus:ring-2 focus:ring-red-100">
-              <SelectValue placeholder="All categories" />
+              <SelectValue placeholder="Select Category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All categories</SelectItem>
+              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="photography">Photography</SelectItem>
               <SelectItem value="cycling">Cycling</SelectItem>
+              <SelectItem value="camping">Camping</SelectItem>
+              <SelectItem value="hiking">Hiking</SelectItem>
             </SelectContent>
           </Select>
-          <Select defaultValue="all">
+          <Select value={selectedCondition} onValueChange={(val) => handleFilterChange("condition", val)}>
             <SelectTrigger className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus:border-[#e31824] focus:ring-2 focus:ring-red-100">
-              <SelectValue placeholder="All conditions" />
+              <SelectValue placeholder="Select Condition" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All conditions</SelectItem>
-              <SelectItem value="excellent">Excellent</SelectItem>
+              <SelectItem value="all">All Conditions</SelectItem>
+              <SelectItem value="NEW">New</SelectItem>
+              <SelectItem value="EXCELLENT">Excellent</SelectItem>
+              <SelectItem value="GOOD">Good</SelectItem>
+              <SelectItem value="FAIR">Fair</SelectItem>
+              <SelectItem value="POOR">Poor</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -84,7 +111,7 @@ const ProviderGearPage = () => {
           Available only
         </label>
       </div>
-      <GearTable />
+      <GearTable items={gearData} />
 
       {/* Pagination — only render when more than 1 page exists */}
       <Pagination page={page} totalPages={totalPages} setPage={setPage} />

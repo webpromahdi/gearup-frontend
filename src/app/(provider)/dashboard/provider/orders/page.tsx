@@ -5,6 +5,7 @@ import { Search, PackageOpen } from "lucide-react";
 import Link from "next/link";
 import PageHeading from "@/components/shared/PageHeading";
 import StatusBadge from "@/components/shared/StatusBadge";
+import { useSearchAndSort } from "@/app/hooks/useSearchAndSort";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -68,8 +69,9 @@ const getActionLabel = (status: ProviderOrder["status"]) => {
 };
 
 const ProviderOrdersPage = () => {
-  const [activeTab, setActiveTab] = useState<StatusTab>("All");
-  const [search, setSearch] = useState("");
+  const { localSearch, handleSearchChange, searchTerm, handleFilterChange, searchParams } = useSearchAndSort();
+  
+  const activeTab = (searchParams.get("tab") as StatusTab) || "All";
 
   const queryClient = useQueryClient();
 
@@ -94,9 +96,9 @@ const ProviderOrdersPage = () => {
   const filtered = orders.filter((o) => {
     const matchesTab = activeTab === "All" || o.status === activeTab;
     const matchesSearch =
-      o.customer?.name?.toLowerCase().includes(search.toLowerCase()) ||
-      o.gearItem?.name?.toLowerCase().includes(search.toLowerCase()) ||
-      o.id.toLowerCase().includes(search.toLowerCase());
+      o.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      o.gearItem?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      o.id.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesTab && matchesSearch;
   });
 
@@ -121,8 +123,8 @@ const ProviderOrdersPage = () => {
           <Search className="absolute left-3 size-4 text-slate-400" />
           <Input
             placeholder="Search by customer, gear or order ID..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            value={localSearch}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-sm focus:border-[#e31824] focus:ring-2 focus:ring-red-100 focus-visible:ring-0 sm:max-w-sm"
           />
         </label>
@@ -134,7 +136,7 @@ const ProviderOrdersPage = () => {
           {STATUS_TABS.map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => handleFilterChange("tab", tab)}
               className={`h-auto whitespace-nowrap border-b-2 pb-3 text-sm font-bold transition-colors ${activeTab === tab ? "border-[#e31824] text-[#e31824]" : "border-transparent text-slate-500 hover:text-[#1b2748]"}`}
             >
               {STATUS_DISPLAY[tab]} ({tabCounts[tab]})

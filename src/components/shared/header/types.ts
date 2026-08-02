@@ -1,6 +1,6 @@
 import type React from "react";
 
-export type UserRole = "customer" | "provider";
+export type UserRole = "customer" | "provider" | "admin";
 
 export interface HeaderUser {
   name: string;

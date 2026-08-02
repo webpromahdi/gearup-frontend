@@ -34,7 +34,7 @@ type GearItem = {
   image?: string;
 };
 
-const GearTable = ({ short = false }: { short?: boolean }) => {
+const GearTable = ({ short = false, items }: { short?: boolean; items?: GearItem[] }) => {
   const queryClient = useQueryClient();
 
   const { data, isLoading, isError } = useQuery({
@@ -76,7 +76,7 @@ const GearTable = ({ short = false }: { short?: boolean }) => {
     );
   }
 
-  const gearData = Array.isArray(data?.data?.gearItems)
+  const gearData = items ? items : Array.isArray(data?.data?.gearItems)
     ? data.data.gearItems
     : Array.isArray(data?.data)
       ? data.data

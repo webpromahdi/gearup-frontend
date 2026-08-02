@@ -1,30 +1,19 @@
 "use client";
-
 import { ChevronDown } from "lucide-react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useSearchAndSort } from "@/app/hooks/useSearchAndSort";
 
 export default function SortDropdown({
   className = "",
 }: {
   className?: string;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("sort", e.target.value);
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  };
-
-  const currentSort = searchParams.get("sort") || "newest";
+  const { sortValue, handleSort } = useSearchAndSort();
 
   return (
     <div className={`relative ${className}`}>
       <select
-        value={currentSort}
-        onChange={handleSortChange}
+        value={sortValue}
+        onChange={(e) => handleSort(e.target.value)}
         className="h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white pl-3 pr-8 text-sm font-semibold text-slate-600 outline-none focus:border-[#e31824] sm:text-sm text-xs"
       >
         <option value="newest">Sort by: Newest First</option>
