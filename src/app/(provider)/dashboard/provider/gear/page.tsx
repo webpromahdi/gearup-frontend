@@ -3,6 +3,7 @@ import { useState, useMemo } from "react";
 import { Search, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import GearTable from "@/app/(provider)/_components/GearTable";
 import PageHeading from "@/components/shared/PageHeading";
+import Pagination from "@/components/shared/Pagination";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -86,39 +87,7 @@ const ProviderGearPage = () => {
       <GearTable />
 
       {/* Pagination — only render when more than 1 page exists */}
-      {totalPages > 1 && (
-        <div className="mt-7 flex items-center justify-center gap-2 text-sm font-bold">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="flex h-9 items-center gap-1 rounded-lg px-3 text-slate-600 transition-colors hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <ChevronLeft className="size-4" />
-            Prev
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-            <button
-              key={p}
-              onClick={() => setPage(p)}
-              className={`flex size-9 items-center justify-center rounded-lg text-sm font-bold transition-colors ${
-                p === page
-                  ? "bg-[#e31824] text-white"
-                  : "border border-slate-200 bg-white text-slate-600 shadow-sm hover:bg-slate-50"
-              }`}
-            >
-              {p}
-            </button>
-          ))}
-          <button
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
-            className="flex h-9 items-center gap-1 rounded-lg px-3 text-slate-600 transition-colors hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            Next
-            <ChevronRight className="size-4" />
-          </button>
-        </div>
-      )}
+      <Pagination page={page} totalPages={totalPages} setPage={setPage} />
     </div>
   );
 };

@@ -1,6 +1,8 @@
 "use client";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import PageHeading from "@/components/shared/PageHeading";
+import Pagination from "@/components/shared/Pagination";
 import {
   Search,
   MapPin,
@@ -45,7 +47,11 @@ const conditionBadge: Record<string, string> = {
   POOR: "bg-red-100 text-red-700",
 };
 
+const PAGE_SIZE = 12;
+
 const CustomerRentGearPage = () => {
+  const [page, setPage] = useState(1);
+
   const { data: gearItems = [], isLoading: isLoadingGear } = useQuery({
     queryKey: ["public-gears"],
     queryFn: getPublicGearsAction,
@@ -57,6 +63,9 @@ const CustomerRentGearPage = () => {
   });
 
   const availableGears = gearItems.filter((g) => g.availability);
+  const totalPages = Math.ceil(availableGears.length / PAGE_SIZE);
+  const paginatedGears = availableGears.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
   const isLoading = isLoadingGear || isLoadingCategories;
 
   if (isLoading) {
@@ -218,7 +227,7 @@ const CustomerRentGearPage = () => {
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-          {availableGears.map((gear) => (
+          {paginatedGears.map((gear) => (
             <Card
               key={gear.id}
               className="group overflow-hidden rounded-xl bg-white p-0 shadow-[0_2px_12px_rgba(0,0,0,0.06)] flex flex-col border-none"
@@ -284,28 +293,7 @@ const CustomerRentGearPage = () => {
       )}
 
       {/* Pagination */}
-      <div className="mt-10 flex items-center justify-center gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-9 rounded-lg border-slate-200"
-        >
-          <ChevronLeft className="size-4" />
-        </Button>
-        <Button
-          variant="default"
-          className="size-9 rounded-lg bg-[#e31824] p-0 font-bold hover:bg-[#c41520]"
-        >
-          1
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-9 rounded-lg border-slate-200"
-        >
-          <ChevronRight className="size-4" />
-        </Button>
-      </div>
+      <Pagination page={page} totalPages={totalPages} setPage={setPage} />
     </div>
   );
 };

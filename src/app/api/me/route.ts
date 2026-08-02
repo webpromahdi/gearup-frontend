@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
+// This API route acts as a secure proxy to fetch the logged-in user's profile from the backend.
+// It is needed because client components cannot read the `httpOnly` accessToken cookie directly.
 export const GET = async () => {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;

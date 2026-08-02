@@ -15,9 +15,12 @@ import {
 } from "@/components/ui/sheet";
 import { getPublicCategoriesAction } from "@/app/(public)/_actions/homeActions";
 import { getPublicGearsAction } from "@/app/(customer)/_actions/gearActions";
-import { SidebarFilters } from "./_components/GearFilters";
+import { filterGears } from "./_actions/filterGears";
+import { sortGears } from "./_actions/sortGears";
+import { GearFilters } from "./_components/GearFilters";
 import { ActiveFilters } from "./_components/ActiveFilters";
-import { ChevronDown } from "lucide-react";
+import SortDropdown from "./_components/SortDropdown";
+import Pagination from "@/components/shared/Pagination";
 
 export default async function GearBrowsePage({
   searchParams,
@@ -39,20 +42,18 @@ export default async function GearBrowsePage({
     ? (query.conditions as string).split(",")
     : [];
   const availableOnly = query.availableOnly === "true";
+  const sortOption = (query.sort as string) || "newest";
 
   // Apply filters
-  if (categoryFilters.length > 0) {
-    gearItems = gearItems.filter((g) => categoryFilters.includes(g.categoryId));
-  }
-  if (maxPrice < 1000) {
-    gearItems = gearItems.filter((g) => parseInt(g.pricePerDay) <= maxPrice);
-  }
-  if (conditionFilters.length > 0) {
-    gearItems = gearItems.filter((g) => conditionFilters.includes(g.condition));
-  }
-  if (availableOnly) {
-    gearItems = gearItems.filter((g) => g.availability);
-  }
+  gearItems = filterGears(gearItems, {
+    categories: categoryFilters,
+    maxPrice,
+    conditions: conditionFilters,
+    availableOnly,
+  });
+
+  // Apply sorting
+  gearItems = sortGears(gearItems, sortOption);
 
   // Formatting for BrowseCard compatibility
   const formattedItems = gearItems.map((g) => ({
@@ -66,6 +67,14 @@ export default async function GearBrowsePage({
     condition: g.condition,
     image: g.image,
   }));
+
+  const PAGE_SIZE = 12;
+  const currentPage = query.page ? parseInt(query.page as string) || 1 : 1;
+  const totalPages = Math.ceil(formattedItems.length / PAGE_SIZE);
+  const paginatedItems = formattedItems.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
 
   const activeFiltersCount =
     categoryFilters.length +
@@ -96,7 +105,7 @@ export default async function GearBrowsePage({
                 Filters
               </h2>
             </div>
-            <SidebarFilters categories={categories} />
+            <GearFilters categories={categories} />
           </aside>
 
           <section>
@@ -124,31 +133,18 @@ export default async function GearBrowsePage({
                       </SheetTitle>
                     </SheetHeader>
                     <div className="flex-1 overflow-y-auto px-5 pb-6 pt-4">
-                      <SidebarFilters categories={categories} hideApplyButton />
+                      <GearFilters categories={categories} hideApplyButton />
                     </div>
                     <div className="sticky bottom-0 z-10 w-full shrink-0 border-t border-slate-100 bg-white p-5 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
-                      <SheetClose asChild>
-                        <button className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#e31824] text-sm font-bold text-white shadow-md transition hover:bg-[#c41520]">
-                          <Filter className="size-4" />
-                          View Results
-                        </button>
+                      <SheetClose className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#e31824] text-sm font-bold text-white shadow-md transition hover:bg-[#c41520]">
+                        <Filter className="size-4" />
+                        View Results
                       </SheetClose>
                     </div>
                   </SheetContent>
                 </Sheet>
 
-                <div className="relative flex-1 min-w-0">
-                  <select
-                    defaultValue="newest"
-                    className="h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white pl-2.5 pr-8 text-xs font-semibold text-slate-600 outline-none focus:border-[#e31824]"
-                  >
-                    <option value="newest">Sort by: Newest First</option>
-                    <option value="popularity">Sort by: Popularity</option>
-                    <option value="price-asc">Sort by: Price (Low to High)</option>
-                    <option value="price-desc">Sort by: Price (High to Low)</option>
-                  </select>
-                  <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-slate-400" />
-                </div>
+                <SortDropdown className="flex-1 min-w-0" />
               </div>
 
               <div className="flex items-center justify-between">
@@ -174,18 +170,7 @@ export default async function GearBrowsePage({
                   results for{" "}
                   <span className="font-bold text-[#1b2748]">“All Gear”</span>
                 </p>
-                <div className="relative w-48">
-                  <select
-                    defaultValue="newest"
-                    className="h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white pl-3 pr-8 text-sm font-semibold text-slate-600 outline-none focus:border-[#e31824]"
-                  >
-                    <option value="newest">Sort by: Newest First</option>
-                    <option value="popularity">Sort by: Popularity</option>
-                    <option value="price-asc">Sort by: Price (Low to High)</option>
-                    <option value="price-desc">Sort by: Price (High to Low)</option>
-                  </select>
-                  <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-                </div>
+                <SortDropdown className="w-48" />
               </div>
 
               {activeFiltersCount > 0 && (
@@ -204,18 +189,7 @@ export default async function GearBrowsePage({
                   results for{" "}
                   <span className="font-bold text-[#1b2748]">“All Gear”</span>
                 </p>
-                <div className="relative w-48">
-                  <select
-                    defaultValue="newest"
-                    className="h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white pl-3 pr-8 text-sm font-semibold text-slate-600 outline-none focus:border-[#e31824]"
-                  >
-                    <option value="newest">Sort by: Newest First</option>
-                    <option value="popularity">Sort by: Popularity</option>
-                    <option value="price-asc">Sort by: Price (Low to High)</option>
-                    <option value="price-desc">Sort by: Price (High to Low)</option>
-                  </select>
-                  <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-                </div>
+                <SortDropdown className="w-48" />
               </div>
 
               {/* Bottom Row */}
@@ -228,46 +202,18 @@ export default async function GearBrowsePage({
 
             {/* Content Grid */}
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {formattedItems.map((item) => (
+              {paginatedItems.map((item) => (
                 <BrowseCard key={item.id} item={item as any} />
               ))}
-              {formattedItems.length === 0 && (
+              {paginatedItems.length === 0 && (
                 <div className="col-span-full py-20 text-center">
                   <p className="text-slate-500 font-medium">No gear found matching your criteria.</p>
                 </div>
               )}
             </div>
 
-            {formattedItems.length > 0 && (
-              <nav className="mt-10 flex flex-wrap items-center justify-center gap-1 text-sm font-bold">
-                <a
-                  href="#prev"
-                  className="flex h-9 items-center gap-1 rounded-lg px-3 text-slate-500 hover:bg-white"
-                >
-                  <ChevronLeft className="size-4" />
-                  Prev
-                </a>
-                {[1, 2, 3, 4, 5].map((page) => (
-                  <a
-                    key={page}
-                    href={`#page-${page}`}
-                    className={`flex size-9 items-center justify-center rounded-lg ${
-                      page === 1
-                        ? "bg-[#e31824] text-white"
-                        : "text-slate-600 hover:bg-white"
-                    }`}
-                  >
-                    {page}
-                  </a>
-                ))}
-                <a
-                  href="#next"
-                  className="flex h-9 items-center gap-1 rounded-lg px-3 text-slate-500 hover:bg-white"
-                >
-                  Next
-                  <ChevronRight className="size-4" />
-                </a>
-              </nav>
+            {totalPages > 1 && (
+              <Pagination page={currentPage} totalPages={totalPages} />
             )}
           </section>
         </div>

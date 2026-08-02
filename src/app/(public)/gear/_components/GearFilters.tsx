@@ -1,7 +1,5 @@
 "use client";
-
-import { useCallback, useState, useEffect } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useGearFilters } from "@/app/hooks/useGearFilters";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { ChevronDown, ChevronUp, Filter } from "lucide-react";
@@ -11,85 +9,23 @@ type PublicCategory = {
   name: string;
 };
 
-export function SidebarFilters({
+export function GearFilters({
   categories,
   hideApplyButton,
 }: {
   categories: PublicCategory[];
   hideApplyButton?: boolean;
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const urlMaxPrice = searchParams.get("maxPrice")
-    ? parseInt(searchParams.get("maxPrice") as string)
-    : 1000;
-
-  const [maxPrice, setMaxPrice] = useState([urlMaxPrice]);
-
-  useEffect(() => {
-    setMaxPrice([urlMaxPrice]);
-  }, [urlMaxPrice]);
-
-  const updateQueryParams = useCallback(
-    (updates: Record<string, string | null>) => {
-      const params = new URLSearchParams(searchParams.toString());
-      Object.entries(updates).forEach(([key, value]) => {
-        if (value === null) {
-          params.delete(key);
-        } else {
-          params.set(key, value);
-        }
-      });
-      router.replace(pathname + "?" + params.toString(), { scroll: false });
-    },
-    [searchParams, pathname, router]
-  );
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      if (maxPrice[0] !== urlMaxPrice) {
-        updateQueryParams({
-          maxPrice: maxPrice[0] < 1000 ? maxPrice[0].toString() : null,
-        });
-      }
-    }, 400);
-    return () => clearTimeout(handler);
-  }, [maxPrice, urlMaxPrice, updateQueryParams]);
-
-  const handleCategoryChange = (categoryId: string, checked: boolean) => {
-    const currentCats = searchParams.get("categories")?.split(",") || [];
-    let newCats = [...currentCats];
-    
-    if (checked) {
-      if (!newCats.includes(categoryId)) newCats.push(categoryId);
-    } else {
-      newCats = newCats.filter((id) => id !== categoryId && id !== "");
-    }
-    
-    updateQueryParams({
-      categories: newCats.length > 0 ? newCats.join(",") : null,
-    });
-  };
-
-  const handleConditionChange = (condition: string, checked: boolean) => {
-    const currentConds = searchParams.get("conditions")?.split(",") || [];
-    let newConds = [...currentConds];
-    
-    if (checked) {
-      if (!newConds.includes(condition)) newConds.push(condition);
-    } else {
-      newConds = newConds.filter((c) => c !== condition && c !== "");
-    }
-    
-    updateQueryParams({
-      conditions: newConds.length > 0 ? newConds.join(",") : null,
-    });
-  };
-
-  const selectedCategories = searchParams.get("categories")?.split(",") || [];
-  const selectedConditions = searchParams.get("conditions")?.split(",") || [];
+  const {
+    maxPrice,
+    setMaxPrice,
+    selectedCategories,
+    selectedConditions,
+    isAvailableOnly,
+    handleCategoryChange,
+    handleConditionChange,
+    toggleAvailableOnly,
+  } = useGearFilters();
 
   return (
     <div className="space-y-8 mt-2">
@@ -129,7 +65,7 @@ export function SidebarFilters({
         <div className="pt-6">
           <Slider
             value={maxPrice}
-            onValueChange={setMaxPrice}
+            onValueChange={(val) => setMaxPrice(val as number[])}
             max={1000}
             step={10}
             className="mt-2"
@@ -138,7 +74,10 @@ export function SidebarFilters({
             <span className="rounded-md bg-red-50 px-2.5 py-1.5 text-[#e31824]">
               $0
             </span>
-            <span>Up to ${maxPrice[0]}{maxPrice[0] === 1000 ? "+" : ""}/day</span>
+            <span>
+              Up to ${maxPrice[0]}
+              {maxPrice[0] === 1000 ? "+" : ""}/day
+            </span>
             <span className="rounded-md bg-red-50 px-2.5 py-1.5 text-[#e31824]">
               $1000+
             </span>
@@ -178,22 +117,15 @@ export function SidebarFilters({
           Show Available Only
         </span>
         <button
-          onClick={() => {
-            const current = searchParams.get("availableOnly") === "true";
-            updateQueryParams({ availableOnly: current ? null : "true" });
-          }}
+          onClick={toggleAvailableOnly}
           aria-label="Show available gear only"
           className={`relative h-6 w-11 rounded-full transition ${
-            searchParams.get("availableOnly") === "true"
-              ? "bg-[#e31824]"
-              : "bg-slate-300"
+            isAvailableOnly ? "bg-[#e31824]" : "bg-slate-300"
           }`}
         >
           <i
             className={`absolute top-1 size-4 rounded-full bg-white shadow-sm transition-all ${
-              searchParams.get("availableOnly") === "true"
-                ? "right-1"
-                : "left-1"
+              isAvailableOnly ? "right-1" : "left-1"
             }`}
           />
         </button>
@@ -202,7 +134,7 @@ export function SidebarFilters({
       {!hideApplyButton && (
         <button
           onClick={() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: "smooth" });
           }}
           className="mt-8 flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#e31824] text-sm font-bold text-white transition hover:bg-[#c41520]"
         >
