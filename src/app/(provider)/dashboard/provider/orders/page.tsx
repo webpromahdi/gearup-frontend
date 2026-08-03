@@ -69,8 +69,14 @@ const getActionLabel = (status: ProviderOrder["status"]) => {
 };
 
 const ProviderOrdersPage = () => {
-  const { localSearch, handleSearchChange, searchTerm, handleFilterChange, searchParams } = useSearchAndSort();
-  
+  const {
+    localSearch,
+    handleSearchChange,
+    searchTerm,
+    handleFilterChange,
+    searchParams,
+  } = useSearchAndSort();
+
   const activeTab = (searchParams.get("tab") as StatusTab) || "All";
 
   const queryClient = useQueryClient();
@@ -117,7 +123,7 @@ const ProviderOrdersPage = () => {
     <div className="p-5 sm:p-8">
       <PageHeading title="Incoming Orders" />
 
-      {/* Search bar — below heading, consistent with other pages */}
+      {/* Search bar*/}
       <div className="mb-4">
         <label className="relative flex items-center">
           <Search className="absolute left-3 size-4 text-slate-400" />

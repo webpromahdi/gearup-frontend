@@ -16,8 +16,6 @@ export const sortGears = (
         (a, b) => parseFloat(b.pricePerDay) - parseFloat(a.pricePerDay)
       );
     case "popularity":
-      // Since reviews are mocked in formatting, we'll sort by number of actual reviews if they exist, 
-      // or fallback to a predefined logic.
       return sorted.sort(
         (a, b) => (b.reviews?.length || 0) - (a.reviews?.length || 0)
       );

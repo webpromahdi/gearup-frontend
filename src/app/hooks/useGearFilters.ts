@@ -9,77 +9,120 @@ export function useGearFilters() {
   const urlMaxPrice = searchParams.get("maxPrice")
     ? parseInt(searchParams.get("maxPrice") as string)
     : 1000;
+  
+  const urlCategories = searchParams.get("categories")?.split(",").filter(Boolean) || [];
+  const urlConditions = searchParams.get("conditions")?.split(",").filter(Boolean) || [];
+  const urlAvailableOnly = searchParams.get("availableOnly") === "true";
 
   const [maxPrice, setMaxPrice] = useState([urlMaxPrice]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(urlCategories);
+  const [selectedConditions, setSelectedConditions] = useState<string[]>(urlConditions);
+  const [isAvailableOnly, setIsAvailableOnly] = useState<boolean>(urlAvailableOnly);
 
+  // Sync from URL to local state if URL changes externally
   useEffect(() => {
     setMaxPrice([urlMaxPrice]);
-  }, [urlMaxPrice]);
+    setSelectedCategories(urlCategories);
+    setSelectedConditions(urlConditions);
+    setIsAvailableOnly(urlAvailableOnly);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    urlMaxPrice, 
+    searchParams.get("categories"), 
+    searchParams.get("conditions"), 
+    urlAvailableOnly
+  ]);
 
   const updateQueryParams = useCallback(
     (updates: Record<string, string | null>) => {
-      const params = new URLSearchParams(searchParams.toString());
+      // Using window.location.search ensures we get the absolutely latest URL params 
+      // preventing race conditions with other updates
+      const currentSearch = typeof window !== 'undefined' ? window.location.search : searchParams.toString();
+      const params = new URLSearchParams(currentSearch);
+      
+      let hasChanges = false;
       Object.entries(updates).forEach(([key, value]) => {
-        if (value === null) {
-          params.delete(key);
+        const currentVal = params.get(key);
+        if (value === null || value === "") {
+          if (currentVal !== null) {
+            params.delete(key);
+            hasChanges = true;
+          }
         } else {
-          params.set(key, value);
+          if (currentVal !== value) {
+            params.set(key, value);
+            hasChanges = true;
+          }
         }
       });
-      router.replace(pathname + "?" + params.toString(), { scroll: false });
+      
+      if (hasChanges) {
+        params.set("page", "1"); // reset page on filter change
+        router.replace(pathname + "?" + params.toString(), { scroll: false });
+      }
     },
-    [searchParams, pathname, router],
+    [pathname, router, searchParams],
   );
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      if (maxPrice[0] !== urlMaxPrice) {
+      const newMaxPrice = maxPrice[0] < 1000 ? maxPrice[0].toString() : null;
+      const newCats = selectedCategories.length > 0 ? selectedCategories.join(",") : null;
+      const newConds = selectedConditions.length > 0 ? selectedConditions.join(",") : null;
+      const newAvail = isAvailableOnly ? "true" : null;
+
+      const oldMaxPrice = searchParams.get("maxPrice");
+      const oldCats = searchParams.get("categories");
+      const oldConds = searchParams.get("conditions");
+      const oldAvail = searchParams.get("availableOnly");
+
+      if (
+        newMaxPrice !== oldMaxPrice ||
+        newCats !== oldCats ||
+        newConds !== oldConds ||
+        newAvail !== oldAvail
+      ) {
         updateQueryParams({
-          maxPrice: maxPrice[0] < 1000 ? maxPrice[0].toString() : null,
+          maxPrice: newMaxPrice,
+          categories: newCats,
+          conditions: newConds,
+          availableOnly: newAvail,
         });
       }
     }, 400);
     return () => clearTimeout(handler);
-  }, [maxPrice, urlMaxPrice, updateQueryParams]);
+  }, [
+    maxPrice, 
+    selectedCategories, 
+    selectedConditions, 
+    isAvailableOnly, 
+    updateQueryParams,
+    searchParams
+  ]);
 
   const handleCategoryChange = (categoryId: string, checked: boolean) => {
-    const currentCats = searchParams.get("categories")?.split(",") || [];
-    let newCats = [...currentCats];
-
-    if (checked) {
-      if (!newCats.includes(categoryId)) newCats.push(categoryId);
-    } else {
-      newCats = newCats.filter((id) => id !== categoryId && id !== "");
-    }
-
-    updateQueryParams({
-      categories: newCats.length > 0 ? newCats.join(",") : null,
+    setSelectedCategories((prev) => {
+      if (checked) {
+        return prev.includes(categoryId) ? prev : [...prev, categoryId];
+      } else {
+        return prev.filter((id) => id !== categoryId);
+      }
     });
   };
 
   const handleConditionChange = (condition: string, checked: boolean) => {
-    const currentConds = searchParams.get("conditions")?.split(",") || [];
-    let newConds = [...currentConds];
-
-    if (checked) {
-      if (!newConds.includes(condition)) newConds.push(condition);
-    } else {
-      newConds = newConds.filter((c) => c !== condition && c !== "");
-    }
-
-    updateQueryParams({
-      conditions: newConds.length > 0 ? newConds.join(",") : null,
+    setSelectedConditions((prev) => {
+      if (checked) {
+        return prev.includes(condition) ? prev : [...prev, condition];
+      } else {
+        return prev.filter((c) => c !== condition);
+      }
     });
   };
 
   const toggleAvailableOnly = () => {
-    const current = searchParams.get("availableOnly") === "true";
-    updateQueryParams({ availableOnly: current ? null : "true" });
+    setIsAvailableOnly((prev) => !prev);
   };
-
-  const selectedCategories = searchParams.get("categories")?.split(",") || [];
-  const selectedConditions = searchParams.get("conditions")?.split(",") || [];
-  const isAvailableOnly = searchParams.get("availableOnly") === "true";
 
   return {
     maxPrice,

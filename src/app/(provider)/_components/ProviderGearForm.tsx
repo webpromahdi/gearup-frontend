@@ -3,6 +3,7 @@ import type { ElementType, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
@@ -90,6 +91,12 @@ const ProviderGearForm = ({
         availability: true,
       } as unknown as GearFormValues),
   });
+
+  useEffect(() => {
+    if (initialValues) {
+      reset(initialValues);
+    }
+  }, [initialValues, reset]);
 
   const { data, isLoading: isCategoriesLoading } = useQuery({
     queryKey: ["provider-categories"],
@@ -234,13 +241,13 @@ const ProviderGearForm = ({
             />
             <div className="mt-8 grid gap-x-7 gap-y-6 md:grid-cols-2">
               <Field
-                label="Price Per Day ($)"
+                label="Price Per Day (৳)"
                 required
                 error={errors.pricePerDay?.message}
               >
                 <div className="flex overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.02)] transition-all focus-within:border-[#e31824] focus-within:ring-4 focus-within:ring-red-100/70">
                   <span className="flex h-12 w-11 items-center justify-center border-r border-slate-200/80 bg-slate-50 text-sm font-semibold text-slate-600">
-                    $
+                    ৳
                   </span>
                   <Input
                     {...register("pricePerDay", { valueAsNumber: true })}

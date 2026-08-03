@@ -1,6 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import PageHeading from "@/components/shared/PageHeading";
@@ -23,6 +23,7 @@ const BookingPage = () => {
   const router = useRouter();
   const params = useParams();
   const gearId = params.id as string;
+  const queryClient = useQueryClient();
 
   const today = new Date().toISOString().split("T")[0];
   const [startDate, setStartDate] = useState(today);
@@ -59,6 +60,7 @@ const BookingPage = () => {
         quantity,
       }),
     onSuccess: (order) => {
+      queryClient.invalidateQueries({ queryKey: ["public-gears"] });
       toast.success("Order created! Proceeding to rental details.");
       router.push(`/dashboard/customer/rentals/${order.id}`);
     },
@@ -146,7 +148,7 @@ const BookingPage = () => {
               <p className="text-slate-500">
                 Price per day
                 <strong className="block pt-1 text-[#e31824]">
-                  ${pricePerDay.toFixed(2)}
+                  ৳{pricePerDay.toFixed(2)}
                 </strong>
               </p>
               <p className="text-slate-500">
@@ -235,13 +237,13 @@ const BookingPage = () => {
                 <div className="flex justify-between text-slate-600">
                   <span>Rate</span>
                   <span className="font-bold text-[#1b2748]">
-                    ${pricePerDay.toFixed(2)} / day × {quantity}
+                    ৳{pricePerDay.toFixed(2)} / day × {quantity}
                   </span>
                 </div>
                 <div className="border-t border-slate-200 pt-2 flex justify-between font-extrabold text-[#1b2748]">
                   <span>Total</span>
                   <span className="text-[#e31824] text-base">
-                    ${subtotal.toFixed(2)}
+                    ৳{subtotal.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -257,7 +259,7 @@ const BookingPage = () => {
                     Creating Order...
                   </span>
                 ) : (
-                  `Confirm & Pay $${subtotal.toFixed(2)}`
+                  `Confirm & Pay ৳${subtotal.toFixed(2)}`
                 )}
               </Button>
             </form>

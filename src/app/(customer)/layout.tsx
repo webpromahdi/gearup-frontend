@@ -34,7 +34,9 @@ const NavLinks = ({
 }) => (
   <nav className="mt-7 space-y-1">
     {nav.map(([Icon, label, href]) => {
-      const isActive = pathname === href || (href !== "/dashboard/customer" && pathname.startsWith(href));
+      const isActive =
+        pathname === href ||
+        (href !== "/dashboard/customer" && pathname.startsWith(href + "/"));
       return (
         <Link
           key={label}

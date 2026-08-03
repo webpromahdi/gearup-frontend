@@ -131,8 +131,8 @@ const AdminCategoriesPage = () => {
   return (
     <div className="p-5 sm:p-8">
       <PageHeading title="Category Management" />
-      <div className="grid gap-6 xl:grid-cols-[13fr_7fr]">
-        <section>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <section className="min-w-0 lg:col-span-2">
           <div className="mb-4 flex items-end justify-between">
             <div>
               <h2 className="text-xl font-extrabold text-[#1b2748]">
@@ -192,7 +192,10 @@ const AdminCategoriesPage = () => {
                       <TableCell className="px-4 py-3 font-bold text-[#1b2748]">
                         {category.name}
                       </TableCell>
-                      <TableCell className="px-4 py-3 text-slate-500">
+                      <TableCell
+                        className="px-4 py-3 text-slate-500 max-w-[250px] truncate"
+                        title={category.description || ""}
+                      >
                         {category.description || "-"}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-slate-500">
@@ -223,7 +226,7 @@ const AdminCategoriesPage = () => {
           </div>
         </section>
 
-        <aside className="xl:mt-16 h-fit rounded-xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,.06)]">
+        <aside className="lg:mt-16 lg:col-span-1 h-fit rounded-xl bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,.06)]">
           <h2 className="text-xl font-extrabold text-[#1b2748]">
             {editingCategory ? "Edit Category" : "Add New Category"}
           </h2>

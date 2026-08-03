@@ -20,11 +20,6 @@ export const guestLinks = [
 export const accountLinks: Record<UserRole, AccountLink[]> = {
   customer: [
     { label: "My Profile", href: "/profile", icon: UserRound },
-    {
-      label: "My Orders",
-      href: "/dashboard/customer/orders",
-      icon: ShoppingBag,
-    },
     { label: "My Rentals", href: "/dashboard/customer/rentals", icon: Package },
     { label: "Settings", href: "/profile#settings", icon: Settings },
   ],

@@ -1,5 +1,6 @@
 "use server";
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 export type CreateRentalOrderPayload = {
   gearItemId: string;
@@ -70,6 +71,9 @@ export const createRentalOrderAction = async (
   if (!res.ok) {
     throw new Error(result.message || "Failed to create rental order");
   }
+
+  // Clear Next.js cache so the public pages reflect the new stock
+  revalidatePath("/", "layout");
 
   return result.data.rentalOrder;
 };

@@ -25,6 +25,7 @@ import {
   getPublicCategoriesAction,
   getTopGearsAction,
   getPublicReviewsAction,
+  getPlatformStatsAction,
   type PublicCategory,
   type PublicGear,
   type PublicReview,
@@ -124,10 +125,11 @@ function toGearCardItem(g: PublicGear): GearCardItem {
 }
 
 export default async function HomePage() {
-  const [categories, topGears, reviews] = await Promise.all([
+  const [categories, topGears, reviews, stats] = await Promise.all([
     getPublicCategoriesAction(),
     getTopGearsAction(8),
     getPublicReviewsAction(6),
+    getPlatformStatsAction(),
   ]);
 
   return (
@@ -165,10 +167,10 @@ export default async function HomePage() {
           </div>
           <div className="mx-auto mt-14 grid max-w-4xl grid-cols-2 divide-x divide-y divide-white/20 border-white/20 text-left sm:grid-cols-4 sm:divide-y-0 sm:text-center">
             {[
-              ["5,000+", "Gear Items"],
-              ["1,200+", "Happy Customers"],
-              ["300+", "Verified Providers"],
-              ["50+", "Categories"],
+              [`${stats.gearCount}+`, "Gear Items"],
+              [`${stats.customerCount}+`, "Happy Customers"],
+              [`${stats.providerCount}+`, "Verified Providers"],
+              [`${stats.categoryCount}+`, "Categories"],
             ].map(([number, label]) => (
               <div key={label} className="px-4 py-4">
                 <p className="text-2xl font-extrabold text-white">{number}</p>

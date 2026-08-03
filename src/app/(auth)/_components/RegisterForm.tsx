@@ -67,6 +67,7 @@ const RegisterForm = () => {
         name="name"
         icon={User}
         placeholder="Your full name"
+        defaultValue={state?.data?.name || ""}
       />
       {state?.errors?.name && (
         <p className="text-xs text-red-500">{state.errors.name[0]}</p>
@@ -79,6 +80,7 @@ const RegisterForm = () => {
         icon={AtSign}
         type="email"
         placeholder="your@email.com"
+        defaultValue={state?.data?.email || ""}
       />
       {state?.errors?.email && (
         <p className="text-xs text-red-500">{state.errors.email[0]}</p>
@@ -216,6 +218,7 @@ const RegisterForm = () => {
       <label className="flex cursor-pointer items-start gap-2.5 text-sm leading-5 text-slate-600">
         <Checkbox
           name="acceptTerms"
+          defaultChecked={state?.data?.acceptTerms === "on"}
           className="mt-0.5 size-4 rounded border-slate-300 accent-[#e31824]"
         />
         <span>

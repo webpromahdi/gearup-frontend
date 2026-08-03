@@ -1,19 +1,9 @@
 "use client";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import PageHeading from "@/components/shared/PageHeading";
 import Pagination from "@/components/shared/Pagination";
-import {
-  Search,
-  MapPin,
-  Heart,
-  Star,
-  ChevronLeft,
-  ChevronRight,
-  Tag,
-} from "lucide-react";
+import { Search, MapPin, Heart, Star, Tag } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   Select,
@@ -25,6 +15,8 @@ import {
 import { getPublicGearsAction } from "@/app/(customer)/_actions/gearActions";
 import { getPublicCategoriesAction } from "@/app/(customer)/_actions/categoryActions";
 import Link from "next/link";
+import { useSearchAndSort } from "@/app/hooks/useSearchAndSort";
+import { usePagination } from "@/app/hooks/usePagination";
 
 const categoryColorPalette = [
   { color: "text-red-500", bg: "bg-red-50" },
@@ -50,7 +42,15 @@ const conditionBadge: Record<string, string> = {
 const PAGE_SIZE = 12;
 
 const CustomerRentGearPage = () => {
-  const [page, setPage] = useState(1);
+  const {
+    localSearch,
+    handleSearchChange,
+    searchTerm,
+    sortValue,
+    handleSort,
+    handleFilterChange,
+    localFilters,
+  } = useSearchAndSort();
 
   const { data: gearItems = [], isLoading: isLoadingGear } = useQuery({
     queryKey: ["public-gears"],
@@ -62,9 +62,94 @@ const CustomerRentGearPage = () => {
     queryFn: getPublicCategoriesAction,
   });
 
-  const availableGears = gearItems.filter((g) => g.availability);
-  const totalPages = Math.ceil(availableGears.length / PAGE_SIZE);
-  const paginatedGears = availableGears.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const selectedCategory = localFilters.category || "all";
+  const selectedLocation = localFilters.location || "all";
+  const selectedCondition = localFilters.condition || "all";
+  const availableOnly = localFilters.available === "true";
+
+  const categoryName =
+    selectedCategory === "all"
+      ? "All Categories"
+      : categories.find((c) => c.id === selectedCategory)?.name ||
+        "All Categories";
+
+  const locationsMap: Record<string, string> = {
+    all: "All Locations",
+    dhaka: "Dhaka",
+    chittagong: "Chittagong",
+    rajshahi: "Rajshahi",
+    khulna: "Khulna",
+    barisal: "Barisal",
+    sylhet: "Sylhet",
+    rangpur: "Rangpur",
+    mymensingh: "Mymensingh",
+  };
+  const locationName = locationsMap[selectedLocation] || "All Locations";
+
+  const conditionsMap: Record<string, string> = {
+    all: "Condition (All)",
+    NEW: "New",
+    EXCELLENT: "Excellent",
+    GOOD: "Good",
+    FAIR: "Fair",
+  };
+  const conditionName = conditionsMap[selectedCondition] || "Condition (All)";
+
+  const sortsMap: Record<string, string> = {
+    newest: "Newest First",
+    "price-low": "Price: Low to High",
+    "price-high": "Price: High to Low",
+  };
+  const sortName = sortsMap[sortValue] || "Newest First";
+
+  const availableGears = gearItems.filter((g) => {
+    if (!g.availability) return false;
+    const matchesSearch =
+      g.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      g.brand?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "all" ||
+      g.categoryId === selectedCategory ||
+      g.category?.name?.toLowerCase() === selectedCategory.toLowerCase();
+    const matchesLocation =
+      selectedLocation === "all" ||
+      g.address?.toLowerCase().includes(selectedLocation.toLowerCase());
+    const matchesCondition =
+      selectedCondition === "all" || g.condition === selectedCondition;
+    const matchesAvailable = !availableOnly || g.availability === true;
+
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesLocation &&
+      matchesCondition &&
+      matchesAvailable
+    );
+  });
+
+  availableGears.sort((a, b) => {
+    if (sortValue === "price-low")
+      return Number(a.pricePerDay) - Number(b.pricePerDay);
+    if (sortValue === "price-high")
+      return Number(b.pricePerDay) - Number(a.pricePerDay);
+    return (
+      new Date(b.createdAt || 0).getTime() -
+      new Date(a.createdAt || 0).getTime()
+    );
+  });
+
+  const {
+    page,
+    setPage,
+    totalPages,
+    paginatedData: paginatedGears,
+  } = usePagination(availableGears, PAGE_SIZE, [
+    searchTerm,
+    selectedCategory,
+    selectedLocation,
+    selectedCondition,
+    sortValue,
+  ]);
 
   const isLoading = isLoadingGear || isLoadingCategories;
 
@@ -89,16 +174,23 @@ const CustomerRentGearPage = () => {
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
           <Input
             placeholder="Search gear, brand or keyword..."
+            value={localSearch}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="pl-9 bg-transparent border-slate-200"
           />
         </div>
         <div className="w-full lg:w-48">
-          <Select defaultValue="all-categories">
+          <Select
+            value={selectedCategory}
+            onValueChange={(val) => handleFilterChange("category", val)}
+          >
             <SelectTrigger className="bg-transparent border-slate-200">
-              <SelectValue placeholder="Category" />
+              <SelectValue placeholder="All Categories">
+                {categoryName}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all-categories">All Categories</SelectItem>
+              <SelectItem value="all">All Categories</SelectItem>
               {categories.map((cat) => (
                 <SelectItem key={cat.id} value={cat.id}>
                   {cat.name}
@@ -108,21 +200,28 @@ const CustomerRentGearPage = () => {
           </Select>
         </div>
         <div className="w-full lg:w-48">
-          <Select defaultValue="all-locations">
+          <Select
+            value={selectedLocation}
+            onValueChange={(val) => handleFilterChange("location", val)}
+          >
             <SelectTrigger className="bg-transparent border-slate-200">
-              <SelectValue placeholder="Location" />
+              <SelectValue placeholder="All Locations">
+                {locationName}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all-locations">All Locations</SelectItem>
+              <SelectItem value="all">All Locations</SelectItem>
               <SelectItem value="dhaka">Dhaka</SelectItem>
               <SelectItem value="chittagong">Chittagong</SelectItem>
+              <SelectItem value="rajshahi">Rajshahi</SelectItem>
+              <SelectItem value="khulna">Khulna</SelectItem>
+              <SelectItem value="barisal">Barisal</SelectItem>
               <SelectItem value="sylhet">Sylhet</SelectItem>
+              <SelectItem value="rangpur">Rangpur</SelectItem>
+              <SelectItem value="mymensingh">Mymensingh</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        <Button className="w-full bg-[#e31824] hover:bg-[#c41520] lg:w-32">
-          Search
-        </Button>
       </Card>
 
       {/* Browse by Category */}
@@ -179,31 +278,46 @@ const CustomerRentGearPage = () => {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-4">
-          <Select defaultValue="condition">
+          <Select
+            value={selectedCondition}
+            onValueChange={(val) => handleFilterChange("condition", val)}
+          >
             <SelectTrigger className="w-[120px] bg-white h-9 text-sm">
-              <SelectValue placeholder="Condition" />
+              <SelectValue placeholder="Condition">{conditionName}</SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="condition">Condition</SelectItem>
+              <SelectItem value="all">Condition (All)</SelectItem>
               <SelectItem value="NEW">New</SelectItem>
               <SelectItem value="EXCELLENT">Excellent</SelectItem>
               <SelectItem value="GOOD">Good</SelectItem>
               <SelectItem value="FAIR">Fair</SelectItem>
             </SelectContent>
           </Select>
-          <div className="flex items-center gap-2 rounded-lg bg-white px-3 py-1.5 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
-            <span className="text-sm font-medium text-slate-700">
+          <div
+            className="flex items-center gap-2 rounded-lg bg-white px-3 py-1.5 shadow-[0_2px_12px_rgba(0,0,0,0.06)] cursor-pointer"
+            onClick={() =>
+              handleFilterChange("available", availableOnly ? "false" : "true")
+            }
+          >
+            <span className="text-sm font-medium text-slate-700 select-none">
               Available Only
             </span>
-            <div className="w-9 h-5 bg-[#0fc172] rounded-full flex items-center p-0.5 cursor-pointer">
-              <div className="w-4 h-4 bg-white rounded-full translate-x-4"></div>
+            <div
+              className={`w-9 h-5 rounded-full flex items-center p-0.5 transition-colors ${availableOnly ? "bg-[#0fc172]" : "bg-slate-300"}`}
+            >
+              <div
+                className={`w-4 h-4 bg-white rounded-full transition-transform ${availableOnly ? "translate-x-4" : "translate-x-0"}`}
+              ></div>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-slate-500">Sort By</span>
-            <Select defaultValue="newest">
+            <Select
+              value={sortValue}
+              onValueChange={(val) => handleSort(val)}
+            >
               <SelectTrigger className="w-[130px] bg-white h-9 text-sm border-none shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
-                <SelectValue placeholder="Sort" />
+                <SelectValue placeholder="Sort">{sortName}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="newest">Newest First</SelectItem>

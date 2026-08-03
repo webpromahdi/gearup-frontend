@@ -15,7 +15,7 @@ const ProviderEditGearPage = async ({
     notFound();
   }
 
-  const gear = res.data;
+  const gear = res.data?.gearItem || res.data;
 
   const initialValues = {
     name: gear.name ?? "",

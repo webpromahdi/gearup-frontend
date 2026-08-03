@@ -1,6 +1,5 @@
 "use client";
 import { Trash2, Loader2 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -20,7 +19,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 
-type GearItem = {
+export type GearItem = {
   id: string;
   name: string;
   brand: string;
@@ -34,7 +33,15 @@ type GearItem = {
   image?: string;
 };
 
-const GearTable = ({ short = false, items }: { short?: boolean; items?: GearItem[] }) => {
+const GearTable = ({
+  short = false,
+  items,
+  startIndex = 0,
+}: {
+  short?: boolean;
+  items?: GearItem[];
+  startIndex?: number;
+}) => {
   const queryClient = useQueryClient();
 
   const { data, isLoading, isError } = useQuery({
@@ -76,17 +83,23 @@ const GearTable = ({ short = false, items }: { short?: boolean; items?: GearItem
     );
   }
 
-  const gearData = items ? items : Array.isArray(data?.data?.gearItems)
-    ? data.data.gearItems
-    : Array.isArray(data?.data)
-      ? data.data
-      : Array.isArray(data)
-        ? data
-        : [];
+  const gearData = items
+    ? items
+    : Array.isArray(data?.data?.gearItems)
+      ? data.data.gearItems
+      : Array.isArray(data?.data)
+        ? data.data
+        : Array.isArray(data)
+          ? data
+          : [];
   const rows = short ? gearData.slice(0, 4) : gearData;
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+    <div
+      className={`overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.02)] ${
+        !short ? "min-h-[445px]" : ""
+      }`}
+    >
       <Table className="min-w-[1000px] w-full text-left text-sm">
         <TableHeader className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
           <TableRow className="hover:bg-transparent">
@@ -144,7 +157,9 @@ const GearTable = ({ short = false, items }: { short?: boolean; items?: GearItem
                       className="size-10 rounded-lg object-cover"
                     />
                   ) : (
-                    <span className="text-slate-500">{index + 1}</span>
+                    <span className="text-slate-500">
+                      {startIndex + index + 1}
+                    </span>
                   )}
                 </TableCell>
                 <TableCell className="px-5 py-4">
@@ -176,7 +191,7 @@ const GearTable = ({ short = false, items }: { short?: boolean; items?: GearItem
                     : gear.category || gear.categoryId}
                 </TableCell>
                 <TableCell className="px-5 py-4 text-[13px] font-bold text-[#1b2748]">
-                  ${gear.pricePerDay}
+                  ৳{gear.pricePerDay}
                 </TableCell>
                 <TableCell className="px-5 py-4 text-[13px] text-slate-500">
                   {gear.stock}

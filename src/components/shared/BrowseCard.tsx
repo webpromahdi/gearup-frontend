@@ -1,6 +1,5 @@
 import { Star } from "lucide-react";
 import { Card } from "../ui/card";
-import { browseItems } from "@/lib/data/browseItems";
 
 import Link from "next/link";
 
@@ -41,18 +40,25 @@ export default function BrowseCard({
         </p>
         <div className="mt-3 flex items-center gap-1.5 text-sm text-slate-600">
           <Star className="size-4 fill-[#f4b740] text-[#f4b740]" />
-          <span className="font-semibold text-slate-700">{item.rating || "4.8"}</span>
-          <span>· {item.reviews || "12"} reviews</span>
+          <span className="font-semibold text-slate-700">{item.rating}</span>
+          <span>· {item.reviews} {item.reviews === 1 ? 'review' : 'reviews'}</span>
         </div>
         <div className="mt-4 flex items-end justify-between">
           <p className="text-xl font-extrabold text-[#e31824]">
-            ${item.pricePerDay || item.price}
+            ৳{item.pricePerDay || item.price}
             <span className="text-sm font-medium">/day</span>
           </p>
-          <span className="flex items-center gap-1 text-xs font-semibold text-emerald-700">
-            <i className="size-2 rounded-full bg-emerald-500" />
-            Available
-          </span>
+          {item.availability !== false ? (
+            <span className="flex items-center gap-1 text-xs font-semibold text-emerald-700">
+              <i className="size-2 rounded-full bg-emerald-500" />
+              Available
+            </span>
+          ) : (
+            <span className="flex items-center gap-1 text-xs font-semibold text-red-700">
+              <i className="size-2 rounded-full bg-red-500" />
+              Unavailable
+            </span>
+          )}
         </div>
         <Link
           href={`/gear/${item.id}`}

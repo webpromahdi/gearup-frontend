@@ -72,14 +72,14 @@ export function GearFilters({
           />
           <div className="mt-4 flex items-center justify-between text-xs font-bold text-slate-500">
             <span className="rounded-md bg-red-50 px-2.5 py-1.5 text-[#e31824]">
-              $0
+              ৳0
             </span>
             <span>
-              Up to ${maxPrice[0]}
+              Up to ৳{maxPrice[0]}
               {maxPrice[0] === 1000 ? "+" : ""}/day
             </span>
             <span className="rounded-md bg-red-50 px-2.5 py-1.5 text-[#e31824]">
-              $1000+
+              ৳1000+
             </span>
           </div>
         </div>

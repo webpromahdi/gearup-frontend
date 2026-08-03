@@ -95,6 +95,7 @@ type RegisterState = {
   statusCode: number;
   message: string;
   errors?: Record<string, string[]>;
+  data?: Record<string, any>;
 } | null;
 
 export const registerAction = async (
@@ -118,6 +119,7 @@ export const registerAction = async (
       statusCode: 400,
       message: "Validation failed",
       errors: parsed.error.flatten().fieldErrors,
+      data: raw,
     };
   }
 
@@ -154,6 +156,9 @@ export const registerAction = async (
     } else {
       redirect("/login");
     }
+  } else {
+    // If backend returns error, also preserve the submitted fields (excluding passwords)
+    result.data = raw;
   }
 
   return result;

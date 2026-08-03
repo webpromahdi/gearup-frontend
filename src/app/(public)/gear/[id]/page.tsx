@@ -1,19 +1,13 @@
 import {
-  CalendarDays,
   Star,
-  Heart,
-  Minus,
-  Plus,
-  ShoppingCart,
   User,
   Mail,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { getSingleGearAction } from "@/app/(customer)/_actions/gearActions";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { GearBookingSection } from "../_components/GearBookingSection";
 
 export default async function GearDetailsPage({
   params,
@@ -52,6 +46,8 @@ export default async function GearDetailsPage({
       ratingCounts[r.rating - 1]++;
     }
   });
+
+  const today = new Date().toISOString().split("T")[0];
 
   return (
     <main className="mx-auto max-w-7xl px-5 py-9 lg:px-8">
@@ -169,64 +165,11 @@ export default async function GearDetailsPage({
             ))}
           </div>
           <div className="my-6 border-t border-slate-200" />
-          <section className="rounded-xl bg-[#f5f6fa] p-5">
-            <h2 className="flex items-center gap-2 text-lg font-extrabold text-[#1b2748]">
-              <CalendarDays className="size-5 text-[#e31824]" />
-              Select Your Rental Period
-            </h2>
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <label className="text-xs font-bold text-slate-600">
-                Start Date
-                <Input
-                  type="text"
-                  defaultValue="Jul 20, 2025"
-                  className="mt-1.5 h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-[#1b2748]"
-                />
-              </label>
-              <label className="text-xs font-bold text-slate-600">
-                End Date
-                <Input
-                  type="text"
-                  defaultValue="Jul 23, 2025"
-                  className="mt-1.5 h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-[#1b2748]"
-                />
-              </label>
-            </div>
-            <div className="mt-5 flex items-center justify-between">
-              <span className="text-sm font-bold text-[#1b2748]">
-                Quantity:
-              </span>
-              <div className="flex items-center rounded-lg border border-slate-200 bg-white">
-                <Button className="flex size-9 items-center justify-center text-slate-500">
-                  <Minus className="size-4" />
-                </Button>
-                <span className="w-8 text-center text-sm font-bold">1</span>
-                <Button className="flex size-9 items-center justify-center text-[#e31824]">
-                  <Plus className="size-4" />
-                </Button>
-              </div>
-            </div>
-            <div className="my-5 border-t border-slate-200" />
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-600">
-                Duration: <strong className="text-[#1b2748]">3 days</strong>
-              </span>
-              <span className="font-extrabold text-[#1b2748]">
-                Subtotal: ৳{(parseInt(gear.pricePerDay) * 3).toLocaleString()}
-              </span>
-            </div>
-            <Button className="mt-5 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#e31824] text-sm font-extrabold text-white hover:bg-[#c41520]">
-              <ShoppingCart className="size-4" />
-              Rent Now — ৳{(parseInt(gear.pricePerDay) * 3).toLocaleString()}
-            </Button>
-            <Button className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-[#e31824] bg-white text-sm font-bold text-[#e31824] hover:bg-red-50">
-              <Heart className="size-4" />
-              Save to Wishlist
-            </Button>
-            <p className="mt-4 text-center text-xs font-medium text-slate-500">
-              🔒 Secure payment via Stripe
-            </p>
-          </section>
+          <GearBookingSection 
+            pricePerDay={gear.pricePerDay} 
+            stock={gear.stock} 
+            gearId={gear.id} 
+          />
         </div>
       </section>
 

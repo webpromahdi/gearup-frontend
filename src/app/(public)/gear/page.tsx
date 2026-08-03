@@ -56,17 +56,27 @@ export default async function GearBrowsePage({
   gearItems = sortGears(gearItems, sortOption);
 
   // Formatting for BrowseCard compatibility
-  const formattedItems = gearItems.map((g) => ({
-    id: g.id,
-    name: g.name,
-    brand: g.brand,
-    category: g.category?.name || "Uncategorized",
-    price: parseInt(g.pricePerDay),
-    rating: 4.5,
-    reviews: 12,
-    condition: g.condition,
-    image: g.image,
-  }));
+  const formattedItems = gearItems.map((g) => {
+    const reviews = g.reviews || [];
+    const totalReviews = reviews.length;
+    const avgRating = totalReviews > 0
+      ? (reviews.reduce((acc, r) => acc + r.rating, 0) / totalReviews).toFixed(1)
+      : "0.0";
+
+    return {
+      id: g.id,
+      name: g.name,
+      brand: g.brand,
+      category: g.category?.name || "Uncategorized",
+      price: parseInt(g.pricePerDay),
+      rating: avgRating,
+      reviews: totalReviews,
+      condition: g.condition,
+      image: g.image,
+      availability: g.availability,
+      stock: g.stock,
+    };
+  });
 
   const PAGE_SIZE = 12;
   const currentPage = query.page ? parseInt(query.page as string) || 1 : 1;

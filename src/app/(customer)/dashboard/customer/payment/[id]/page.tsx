@@ -157,13 +157,13 @@ const CustomerPaymentPage = () => {
           <div className="space-y-3 text-sm">
             <div className="flex justify-between text-slate-600">
               <span>
-                Gear rental ({days} day{days !== 1 ? "s" : ""} × ${pricePerDay.toFixed(2)} × {order.quantity})
+                Gear rental ({days} day{days !== 1 ? "s" : ""} × ৳{pricePerDay.toFixed(2)} × {order.quantity})
               </span>
-              <span>${totalAmount.toFixed(2)}</span>
+              <span>৳{totalAmount.toFixed(2)}</span>
             </div>
             <div className="border-t border-slate-200 pt-3 flex justify-between text-lg font-extrabold text-[#1b2748]">
               <span>Total</span>
-              <span className="text-[#e31824]">${totalAmount.toFixed(2)}</span>
+              <span className="text-[#e31824]">৳{totalAmount.toFixed(2)}</span>
             </div>
           </div>
 

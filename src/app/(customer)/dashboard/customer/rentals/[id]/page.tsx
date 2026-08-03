@@ -258,31 +258,39 @@ const CustomerRentalDetailsPage = () => {
             Order Progress
           </h2>
           <div className="mt-8 grid grid-cols-3 gap-y-7 md:grid-cols-5">
-            {steps.map((step, index) => (
-              <div
-                key={step.label}
-                className="relative text-center before:absolute before:top-5 before:left-1/2 before:hidden before:h-0.5 before:w-full before:bg-slate-200 md:before:block first:before:hidden"
-              >
-                <span
-                  className={`relative z-10 mx-auto flex size-10 items-center justify-center rounded-full ${
-                    step.active
-                      ? "border-4 border-blue-200 bg-blue-600 text-white"
-                      : step.completed
-                        ? "bg-emerald-500 text-white"
-                        : "border-2 border-slate-300 bg-white text-slate-400"
-                  }`}
+            {steps.map((step) => {
+              const lineColor = step.completed
+                ? "md:before:bg-emerald-500"
+                : step.active
+                  ? "md:before:bg-blue-500"
+                  : "md:before:bg-slate-200";
+
+              return (
+                <div
+                  key={step.label}
+                  className={`relative text-center before:absolute before:top-5 before:right-1/2 before:hidden before:h-0.5 before:w-full md:before:block first:before:hidden ${lineColor}`}
                 >
-                  {step.completed ? (
-                    <Check className="size-5" />
-                  ) : (
-                    <Circle className="size-3" />
-                  )}
-                </span>
-                <p className="mt-3 text-xs font-extrabold text-[#1b2748]">
-                  {step.label.replaceAll("_", " ")}
-                </p>
-              </div>
-            ))}
+                  <span
+                    className={`relative z-10 mx-auto flex size-10 items-center justify-center rounded-full transition-colors duration-300 ${
+                      step.active
+                        ? "border-4 border-blue-200 bg-blue-600 text-white"
+                        : step.completed
+                          ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
+                          : "border-2 border-slate-300 bg-white text-slate-400"
+                    }`}
+                  >
+                    {step.completed ? (
+                      <Check className="size-5" />
+                    ) : (
+                      <Circle className="size-3" />
+                    )}
+                  </span>
+                  <p className="mt-3 text-[11px] font-extrabold uppercase tracking-wider text-[#1b2748]">
+                    {step.label.replaceAll("_", " ")}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </section>
       )}

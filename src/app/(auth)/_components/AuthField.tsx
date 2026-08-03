@@ -11,6 +11,7 @@ export const Field = ({
   placeholder,
   type = "text",
   suffix,
+  defaultValue,
   onChange,
 }: {
   label: string;
@@ -19,6 +20,7 @@ export const Field = ({
   placeholder: string;
   type?: string;
   suffix?: boolean;
+  defaultValue?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const id = label.toLowerCase().replaceAll(" ", "-");
@@ -35,6 +37,7 @@ export const Field = ({
           name={name}
           type={suffix ? (showPassword ? "text" : "password") : type}
           placeholder={placeholder}
+          defaultValue={defaultValue}
           onChange={onChange}
           className="h-12 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-10 text-sm outline-none transition placeholder:text-slate-400 focus:border-[#e31824] focus:ring-2 focus:ring-red-100"
         />
