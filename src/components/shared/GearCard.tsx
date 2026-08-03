@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
@@ -39,10 +40,12 @@ export default function GearCard({ item }: { item: GearCardItem }) {
   return (
     <Card className="group p-0 overflow-hidden rounded-xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.08)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_12px_28px_rgba(20,29,52,0.15)]">
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-200">
-        <img
+        <Image
           src={item.image}
           alt={item.name}
-          className="absolute inset-0 h-full w-full object-cover object-center transition duration-500 group-hover:scale-105"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover object-center transition duration-500 group-hover:scale-105"
         />
         <span className="absolute left-3 top-3 rounded-full bg-[#e31824] px-2.5 py-1 text-[10px] font-bold tracking-[0.08em] text-white">
           {categoryName.toUpperCase()}

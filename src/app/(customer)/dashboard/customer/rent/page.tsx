@@ -16,6 +16,7 @@ import {
 import { getPublicGearsAction } from "@/app/(customer)/_actions/gearActions";
 import { getPublicCategoriesAction } from "@/app/(customer)/_actions/categoryActions";
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchAndSort } from "@/app/hooks/useSearchAndSort";
 import { usePagination } from "@/app/hooks/usePagination";
 
@@ -348,10 +349,12 @@ const CustomerRentGearContent = () => {
               className="group overflow-hidden rounded-xl bg-white p-0 shadow-[0_2px_12px_rgba(0,0,0,0.06)] flex flex-col border-none"
             >
               <div className="relative aspect-[4/3] overflow-hidden">
-                <img
+                <Image
                   src={gear.image}
                   alt={gear.name}
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
                 <button className="absolute right-3 top-3 flex size-8 items-center justify-center rounded-full bg-white text-slate-400 shadow-md transition hover:text-[#e31824]">
                   <Heart className="size-4" />

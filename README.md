@@ -8,8 +8,22 @@ This repository contains the frontend application, built with Next.js App Router
 
 ---
 
+## 📸 Application Previews
+
+<p align="center">
+  <img src="./public/screenshots/Home%20Page.png" width="49%" alt="Home Page" />
+  <img src="./public/screenshots/Gears%20Page.png" width="49%" alt="Gear Marketplace" />
+  <img src="./public/screenshots/Booking%20Page.png" width="49%" alt="Booking Page" />
+  <img src="./public/screenshots/Customer%20Dashboard.png" width="49%" alt="Customer Dashboard" />
+  <img src="./public/screenshots/Provider%20Dashboard.png" width="49%" alt="Provider Dashboard" />
+  <img src="./public/screenshots/Admin%20Dashboard.png" width="49%" alt="Admin Dashboard" />
+</p>
+
+---
+
 ## 📑 Table of Contents
 
+- [Application Previews](#-application-previews)
 - [Key Features](#-key-features)
 - [Technology Stack](#️-technology-stack)
 - [Project Structure](#-project-structure)

@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { getCustomerRentalOrdersAction } from "@/app/(customer)/_actions/rentalActions";
 import { getCustomerReviewsAction, createReviewAction } from "@/app/(customer)/_actions/reviewActions";
+import Image from "next/image";
 
 const reviewSchema = z.object({
   rating: z.number().min(1, "Please select a rating").max(5),
@@ -143,11 +144,15 @@ const CustomerReviewsPage = () => {
                 className="flex flex-col gap-4 rounded-xl bg-white p-4 sm:flex-row sm:items-center"
               >
                 {rental.gearItem?.image ? (
-                  <img
-                    src={rental.gearItem.image}
-                    alt={rental.gearItem.name}
-                    className="h-20 w-full rounded-lg object-cover sm:w-24"
-                  />
+                  <div className="relative h-20 w-full shrink-0 overflow-hidden rounded-lg sm:w-24">
+                    <Image
+                      src={rental.gearItem.image}
+                      alt={rental.gearItem.name}
+                      fill
+                      sizes="96px"
+                      className="object-cover"
+                    />
+                  </div>
                 ) : (
                   <div className="flex h-20 w-full items-center justify-center rounded-lg bg-slate-100 sm:w-24">
                     <Package className="size-8 text-slate-300" />
@@ -269,11 +274,15 @@ const CustomerReviewsPage = () => {
               >
                 <div className="flex gap-3">
                   {review.gearItem?.image ? (
-                    <img
-                      src={review.gearItem.image}
-                      alt={review.gearItem.name}
-                      className="size-12 rounded-lg object-cover"
-                    />
+                    <div className="relative size-12 shrink-0 overflow-hidden rounded-lg">
+                      <Image
+                        src={review.gearItem.image}
+                        alt={review.gearItem.name}
+                        fill
+                        sizes="48px"
+                        className="object-cover"
+                      />
+                    </div>
                   ) : (
                     <div className="flex size-12 items-center justify-center rounded-lg bg-slate-100">
                       <Package className="size-6 text-slate-300" />

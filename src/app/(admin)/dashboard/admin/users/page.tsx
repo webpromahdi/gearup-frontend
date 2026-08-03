@@ -2,7 +2,7 @@
 import { Suspense } from "react";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, UserPlus, MoreVertical, Users } from "lucide-react";
+import { Search, UserPlus, Users } from "lucide-react";
 import PageHeading from "@/components/shared/PageHeading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

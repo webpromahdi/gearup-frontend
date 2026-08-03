@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { MapPin, Calendar, Package, Tag, Loader2 } from "lucide-react";
 import { getPublicGearsAction } from "@/app/(customer)/_actions/gearActions";
 import { createRentalOrderAction } from "@/app/(customer)/_actions/rentalActions";
+import Image from "next/image";
 
 const conditionColors: Record<string, string> = {
   NEW: "bg-blue-100 text-blue-700",
@@ -114,11 +115,13 @@ const BookingPage = () => {
       <div className="grid gap-6 xl:grid-cols-[3fr_2fr]">
         {/* Left: Gear Info */}
         <Card className="overflow-hidden rounded-xl border-none bg-white p-0 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
-          <div className="aspect-[21/9] overflow-hidden">
-            <img
+          <div className="relative aspect-[21/9] overflow-hidden">
+            <Image
               src={gear.image}
               alt={gear.name}
-              className="h-full w-full object-cover"
+              fill
+              sizes="(max-width: 1024px) 100vw, 60vw"
+              className="object-cover"
             />
           </div>
           <div className="p-6">

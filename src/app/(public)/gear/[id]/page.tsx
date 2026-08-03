@@ -8,6 +8,7 @@ import { getSingleGearAction } from "@/app/(customer)/_actions/gearActions";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GearBookingSection } from "../_components/GearBookingSection";
+import Image from "next/image";
 
 export default async function GearDetailsPage({
   params,
@@ -63,23 +64,27 @@ export default async function GearDetailsPage({
       </div>
       <section className="grid gap-9 lg:grid-cols-[minmax(0,3fr)_minmax(340px,2fr)]">
         <div>
-          <div className="aspect-[4/3] overflow-hidden rounded-2xl bg-slate-200">
-            <img
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-slate-200">
+            <Image
               src={gear.image}
               alt={gear.name}
-              className="h-full w-full object-cover"
+              fill
+              sizes="(max-width: 1024px) 100vw, 60vw"
+              className="object-cover"
             />
           </div>
           <div className="mt-4 grid grid-cols-3 gap-3">
             {[gear.image, gear.image, gear.image].map((src, index) => (
               <button
                 key={index}
-                className={`aspect-[4/3] p-0 overflow-hidden rounded-lg border-2 ${index === 0 ? "border-[#e31824]" : "border-transparent"}`}
+                className={`relative aspect-[4/3] p-0 overflow-hidden rounded-lg border-2 ${index === 0 ? "border-[#e31824]" : "border-transparent"}`}
               >
-                <img
+                <Image
                   src={src}
                   alt={`${gear.name} preview ${index + 1}`}
-                  className="h-full w-full object-cover opacity-80 transition hover:opacity-100"
+                  fill
+                  sizes="(max-width: 1024px) 33vw, 20vw"
+                  className="object-cover opacity-80 transition hover:opacity-100"
                 />
               </button>
             ))}

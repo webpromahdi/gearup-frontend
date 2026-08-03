@@ -2,6 +2,7 @@ import { Star } from "lucide-react";
 import { Card } from "../ui/card";
 
 import Link from "next/link";
+import Image from "next/image";
 
 export default function BrowseCard({
   item,
@@ -17,10 +18,12 @@ export default function BrowseCard({
   return (
     <Card className="group overflow-hidden p-0 gap-0 border-0 rounded-xl bg-white shadow-[0_2px_12px_rgba(0,0,0,0.08)] transition hover:-translate-y-1 hover:shadow-[0_10px_26px_rgba(20,29,52,0.14)]">
       <div className="relative aspect-[4/3] overflow-hidden bg-slate-200">
-        <img
+        <Image
           src={item.image}
           alt={item.name}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover transition duration-500 group-hover:scale-105"
         />
         <span className="absolute left-3 top-3 rounded-full bg-[#e31824] px-2.5 py-1 text-[10px] font-bold tracking-[0.08em] text-white">
           {typeof item.category === "string" ? item.category.toUpperCase() : item.category?.name?.toUpperCase() || "GEAR"}

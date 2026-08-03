@@ -4,6 +4,7 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Star, Plus, Package, RotateCw, DollarSign, PackageOpen } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import StatusBadge from "@/components/shared/StatusBadge";
 import PageHeading from "@/components/shared/PageHeading";
 import {
@@ -205,11 +206,15 @@ const CustomerDashboardPage = () => {
                       <TableCell className="px-5 py-4">
                         <div className="flex items-center gap-3">
                           {order.gearItem?.image ? (
-                            <img
-                              src={order.gearItem.image}
-                              alt={order.gearItem.name}
-                              className="size-10 rounded-lg object-cover"
-                            />
+                            <div className="relative size-10 shrink-0 rounded-lg overflow-hidden">
+                              <Image
+                                src={order.gearItem.image}
+                                alt={order.gearItem.name}
+                                fill
+                                sizes="40px"
+                                className="object-cover"
+                              />
+                            </div>
                           ) : (
                             <div className="flex size-10 items-center justify-center rounded-lg bg-slate-100">
                               <Package className="size-5 text-slate-300" />

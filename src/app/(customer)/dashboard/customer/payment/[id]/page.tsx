@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { getCustomerRentalOrderByIdAction } from "@/app/(customer)/_actions/rentalActions";
 import { createCheckoutSessionAction } from "@/app/(customer)/_actions/paymentActions";
+import Image from "next/image";
 
 const formatDate = (dateStr: string) =>
   new Date(dateStr).toLocaleDateString("en-US", {
@@ -121,11 +122,15 @@ const CustomerPaymentPage = () => {
 
           <div className="mt-6 flex gap-4">
             {gear?.image ? (
-              <img
-                src={gear.image}
-                alt={gear.name}
-                className="size-20 shrink-0 rounded-lg object-cover"
-              />
+              <div className="relative size-20 shrink-0 overflow-hidden rounded-lg">
+                <Image
+                  src={gear.image}
+                  alt={gear.name}
+                  fill
+                  sizes="80px"
+                  className="object-cover"
+                />
+              </div>
             ) : (
               <div className="flex size-20 shrink-0 items-center justify-center rounded-lg bg-slate-100">
                 <Package className="size-8 text-slate-300" />

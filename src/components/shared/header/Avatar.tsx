@@ -1,6 +1,7 @@
 "use client";
 
 import { CircleUserRound } from "lucide-react";
+import Image from "next/image";
 import type { HeaderUser } from "./types";
 
 interface AvatarProps {
@@ -13,11 +14,15 @@ export const Avatar = ({ user, size = "md" }: AvatarProps) => {
 
   if (user.image) {
     return (
-      <img
-        src={user.image}
-        alt={`${user.name} profile`}
-        className={`${dimensions} rounded-full object-cover ring-2 ring-slate-100`}
-      />
+      <div className={`relative ${dimensions} rounded-full overflow-hidden ring-2 ring-slate-100`}>
+        <Image
+          src={user.image}
+          alt={`${user.name} profile`}
+          fill
+          sizes="44px"
+          className="object-cover"
+        />
+      </div>
     );
   }
 

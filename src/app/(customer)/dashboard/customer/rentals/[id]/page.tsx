@@ -19,6 +19,7 @@ import {
   getCustomerRentalOrderByIdAction,
   getCustomerRentalOrdersAction,
 } from "@/app/(customer)/_actions/rentalActions";
+import Image from "next/image";
 
 const ORDER_STEPS = [
   "PLACED",
@@ -139,11 +140,15 @@ const CustomerRentalDetailsPage = () => {
         {/* Left: Gear Info */}
         <Card className="overflow-hidden rounded-xl bg-white p-0 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border-none">
           {gear?.image ? (
-            <img
-              src={gear.image}
-              alt={gear.name}
-              className="aspect-[21/9] w-full object-cover"
-            />
+            <div className="relative aspect-[21/9] w-full overflow-hidden">
+              <Image
+                src={gear.image}
+                alt={gear.name}
+                fill
+                sizes="(max-width: 1024px) 100vw, 60vw"
+                className="object-cover"
+              />
+            </div>
           ) : (
             <div className="flex aspect-[21/9] w-full items-center justify-center bg-slate-100">
               <Package className="size-16 text-slate-300" />
@@ -387,11 +392,15 @@ const CustomerRentalDetailsPage = () => {
               >
                 <div className="flex h-24 items-center border-b border-slate-100">
                   {rental.gearItem?.image ? (
-                    <img
-                      src={rental.gearItem.image}
-                      alt={rental.gearItem.name}
-                      className="h-full w-24 shrink-0 object-cover"
-                    />
+                    <div className="relative h-full w-24 shrink-0 overflow-hidden">
+                      <Image
+                        src={rental.gearItem.image}
+                        alt={rental.gearItem.name}
+                        fill
+                        sizes="96px"
+                        className="object-cover"
+                      />
+                    </div>
                   ) : (
                     <div className="flex h-full w-24 shrink-0 items-center justify-center bg-slate-100">
                       <Package className="size-7 text-slate-300" />

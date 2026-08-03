@@ -16,6 +16,7 @@ import {
 import ConditionBadge from "@/components/shared/ConditionBadge";
 import Availability from "@/components/shared/Availability";
 import Link from "next/link";
+import Image from "next/image";
 import { toast } from "sonner";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 
@@ -151,11 +152,15 @@ const GearTable = ({
               >
                 <TableCell className="px-5 py-4">
                   {short ? (
-                    <img
-                      src={gear.image || "https://placehold.co/400"}
-                      alt={gear.name}
-                      className="size-10 rounded-lg object-cover"
-                    />
+                    <div className="relative size-10 shrink-0 overflow-hidden rounded-lg">
+                      <Image
+                        src={gear.image || "https://placehold.co/400"}
+                        alt={gear.name}
+                        fill
+                        sizes="40px"
+                        className="object-cover"
+                      />
+                    </div>
                   ) : (
                     <span className="text-slate-500">
                       {startIndex + index + 1}
@@ -168,11 +173,15 @@ const GearTable = ({
                       {gear.name}
                     </span>
                   ) : (
-                    <img
-                      src={gear.image || "https://placehold.co/400"}
-                      alt={gear.name}
-                      className="size-10 rounded-lg object-cover"
-                    />
+                    <div className="relative size-10 shrink-0 overflow-hidden rounded-lg">
+                      <Image
+                        src={gear.image || "https://placehold.co/400"}
+                        alt={gear.name}
+                        fill
+                        sizes="40px"
+                        className="object-cover"
+                      />
+                    </div>
                   )}
                 </TableCell>
                 {!short && (

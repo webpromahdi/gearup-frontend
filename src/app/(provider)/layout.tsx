@@ -15,6 +15,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Logo from "@/components/shared/Logo";
 import { logout } from "@/app/services/auth/logout";
+import { useQuery } from "@tanstack/react-query";
+import { getMyProfile } from "@/lib/api/auth.api";
 
 const nav: [React.ElementType, string, string][] = [
   [LayoutDashboard, "Dashboard", "/dashboard/provider"],
@@ -68,6 +70,19 @@ const ProviderSidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
 
+  const { data: profileData } = useQuery({
+    queryKey: ["my-profile"],
+    queryFn: getMyProfile,
+  });
+
+  const userName = profileData?.data?.profile?.name || "Provider";
+  const initials = userName
+    .split(" ")
+    .map((n: string) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase();
+
   const handleLogout = async () => {
     await logout();
     router.push("/login");
@@ -80,10 +95,10 @@ const ProviderSidebar = () => {
       </Link>
       <div className="mt-10 flex items-center gap-3 border-b border-white/15 pb-6">
         <span className="flex size-11 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-600 text-sm font-extrabold">
-          AG
+          {initials}
         </span>
         <div>
-          <p className="font-bold">Adventure Gear Co.</p>
+          <p className="font-bold">{userName}</p>
           <span className="mt-1 inline-flex rounded-full bg-amber-400 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.1em] text-[#1b2748]">
             Provider
           </span>
@@ -105,6 +120,19 @@ const ProviderMobileDrawer = () => {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+
+  const { data: profileData } = useQuery({
+    queryKey: ["my-profile"],
+    queryFn: getMyProfile,
+  });
+
+  const userName = profileData?.data?.profile?.name || "Provider";
+  const initials = userName
+    .split(" ")
+    .map((n: string) => n[0])
+    .join("")
+    .substring(0, 2)
+    .toUpperCase();
 
   const handleLogout = async () => {
     await logout();
@@ -144,10 +172,10 @@ const ProviderMobileDrawer = () => {
         {/* User info */}
         <div className="mt-8 flex items-center gap-3 border-b border-white/15 pb-6">
           <span className="flex size-11 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-600 text-sm font-extrabold">
-            AG
+            {initials}
           </span>
           <div>
-            <p className="font-bold">Adventure Gear Co.</p>
+            <p className="font-bold">{userName}</p>
             <span className="mt-1 inline-flex rounded-full bg-amber-400 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.1em] text-[#1b2748]">
               Provider
             </span>

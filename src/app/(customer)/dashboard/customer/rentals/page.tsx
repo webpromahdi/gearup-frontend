@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Package, PackageOpen } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import PageHeading from "@/components/shared/PageHeading";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { getCustomerRentalOrdersAction } from "@/app/(customer)/_actions/rentalActions";
@@ -119,11 +120,15 @@ const CustomerRentalsListPage = () => {
                 >
                   <div className="flex h-28 items-center border-b border-slate-100 p-4">
                     {rental.gearItem?.image ? (
-                      <img
-                        src={rental.gearItem.image}
-                        alt={rental.gearItem.name}
-                        className="h-full w-24 shrink-0 rounded-lg object-cover"
-                      />
+                      <div className="relative h-full w-24 shrink-0 overflow-hidden rounded-lg">
+                        <Image
+                          src={rental.gearItem.image}
+                          alt={rental.gearItem.name}
+                          fill
+                          sizes="96px"
+                          className="object-cover"
+                        />
+                      </div>
                     ) : (
                       <div className="flex h-full w-24 shrink-0 items-center justify-center rounded-lg bg-slate-100">
                         <Package className="size-8 text-slate-300" />

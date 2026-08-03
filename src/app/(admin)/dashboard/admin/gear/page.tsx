@@ -1,6 +1,5 @@
 "use client";
 import { Suspense } from "react";
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Search, Mountain } from "lucide-react";
 import Availability from "@/components/shared/Availability";
@@ -18,6 +17,7 @@ import {
 } from "@/components/ui/table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { getAdminGearAction } from "@/app/(admin)/_actions/adminActions";
+import Image from "next/image";
 
 const formatDate = (dateStr: string) =>
   new Date(dateStr).toLocaleDateString("en-US", {
@@ -27,7 +27,13 @@ const formatDate = (dateStr: string) =>
   });
 
 const AdminGearContent = () => {
-  const { localSearch, handleSearchChange, searchTerm, handleFilterChange, searchParams } = useSearchAndSort();
+  const {
+    localSearch,
+    handleSearchChange,
+    searchTerm,
+    handleFilterChange,
+    searchParams,
+  } = useSearchAndSort();
   const categoryFilter = searchParams.get("category") || "All";
 
   const { data: gearItems = [], isLoading } = useQuery({
@@ -133,11 +139,15 @@ const AdminGearContent = () => {
                   </TableCell>
                   <TableCell className="px-4 py-3">
                     {gear.image ? (
-                      <img
-                        src={gear.image}
-                        alt={gear.name}
-                        className="size-10 rounded-lg object-cover"
-                      />
+                      <div className="relative size-10 shrink-0 overflow-hidden rounded-lg">
+                        <Image
+                          src={gear.image}
+                          alt={gear.name}
+                          fill
+                          sizes="40px"
+                          className="object-cover"
+                        />
+                      </div>
                     ) : (
                       <div className="flex size-10 items-center justify-center rounded-lg bg-slate-100">
                         <Mountain className="size-5 text-slate-300" />

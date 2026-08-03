@@ -11,6 +11,7 @@ import PageHeading from "@/components/shared/PageHeading";
 import StatusBadge from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import Image from "next/image";
 
 const ProviderOrderDetailsPage = () => {
   const timeline = [
@@ -29,11 +30,15 @@ const ProviderOrderDetailsPage = () => {
       />
       <div className="grid gap-6 xl:grid-cols-[3fr_2fr]">
         <Card className="rounded-xl border border-slate-200 bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
-          <img
-            src="https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=900&auto=format&fit=crop&q=85"
-            alt="Trek mountain bike"
-            className="aspect-video w-full rounded-xl object-cover"
-          />
+          <div className="relative aspect-video w-full overflow-hidden rounded-xl">
+            <Image
+              src="https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=900&auto=format&fit=crop&q=85"
+              alt="Trek mountain bike"
+              fill
+              sizes="(max-width: 1024px) 100vw, 60vw"
+              className="object-cover"
+            />
+          </div>
           <div className="mt-6 flex items-start justify-between gap-4">
             <div>
               <h2 className="text-2xl font-extrabold text-[#1b2748]">
