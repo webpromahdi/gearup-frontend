@@ -8,28 +8,16 @@ This repository contains the frontend application, built with Next.js App Router
 
 ---
 
-## 📸 Application Previews
-
-<p align="center">
-  <img src="./public/screenshots/Home%20Page.png" width="49%" alt="Home Page" />
-  <img src="./public/screenshots/Gears%20Page.png" width="49%" alt="Gear Marketplace" />
-  <img src="./public/screenshots/Booking%20Page.png" width="49%" alt="Booking Page" />
-  <img src="./public/screenshots/Customer%20Dashboard.png" width="49%" alt="Customer Dashboard" />
-  <img src="./public/screenshots/Provider%20Dashboard.png" width="49%" alt="Provider Dashboard" />
-  <img src="./public/screenshots/Admin%20Dashboard.png" width="49%" alt="Admin Dashboard" />
-</p>
-
----
 
 ## 📑 Table of Contents
 
-- [Application Previews](#-application-previews)
 - [Key Features](#-key-features)
 - [Technology Stack](#️-technology-stack)
 - [Project Structure](#-project-structure)
 - [Getting Started (Local Development)](#-getting-started-local-development)
 - [Frontend Routes & API Integration](#-frontend-routes--api-integration)
 - [Security & Architecture Notes](#-security--architecture-notes)
+- [Application Previews](#-application-previews)
 
 ---
 
@@ -135,6 +123,28 @@ For a complete and detailed list of all frontend routes, backend endpoints, and 
 - **Idempotency:** Payment endpoints check transaction statuses before deducting stock to prevent double-charging or inaccurate inventory.
 - **Caching Strategy:** `TanStack Query` is heavily utilized on the client-side for immediate UI updates, cache invalidation, and seamless dashboard interactions.
 - **Protected Routes:** Next.js middleware is used to verify authentication cookies and authorize route access before rendering pages, preventing unauthorized access to dashboards.
+
+---
+
+## 📸 Application Previews
+
+### Home Page
+![Home Page](./public/screenshots/Home%20Page.png)
+
+### Gear Marketplace
+![Gears Page](./public/screenshots/Gears%20Page.png)
+
+### Booking Page
+![Booking Page](./public/screenshots/Booking%20Page.png)
+
+### Customer Dashboard
+![Customer Dashboard](./public/screenshots/Customer%20Dashboard.png)
+
+### Provider Dashboard
+![Provider Dashboard](./public/screenshots/Provider%20Dashboard.png)
+
+### Admin Dashboard
+![Admin Dashboard](./public/screenshots/Admin%20Dashboard.png)
 
 ---
 
