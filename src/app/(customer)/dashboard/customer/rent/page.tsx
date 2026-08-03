@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import PageHeading from "@/components/shared/PageHeading";
 import Pagination from "@/components/shared/Pagination";
@@ -41,7 +42,7 @@ const conditionBadge: Record<string, string> = {
 
 const PAGE_SIZE = 12;
 
-const CustomerRentGearPage = () => {
+const CustomerRentGearContent = () => {
   const {
     localSearch,
     handleSearchChange,
@@ -411,5 +412,17 @@ const CustomerRentGearPage = () => {
     </div>
   );
 };
+
+const CustomerRentGearPage = () => (
+  <Suspense fallback={<DashboardPageFallback />}>
+    <CustomerRentGearContent />
+  </Suspense>
+);
+
+const DashboardPageFallback = () => (
+  <div className="flex h-[60vh] items-center justify-center p-8">
+    <div className="size-8 animate-spin rounded-full border-4 border-slate-200 border-t-[#e31824]" />
+  </div>
+);
 
 export default CustomerRentGearPage;

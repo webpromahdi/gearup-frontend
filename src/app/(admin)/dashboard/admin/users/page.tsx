@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Search, UserPlus, MoreVertical, Users } from "lucide-react";
@@ -45,7 +46,7 @@ const RoleBadge = ({ role }: { role: string }) => {
   );
 };
 
-const AdminUsersPage = () => {
+const AdminUsersContent = () => {
   const { localSearch, handleSearchChange, searchTerm } = useSearchAndSort();
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("All");
 
@@ -213,5 +214,17 @@ const AdminUsersPage = () => {
     </div>
   );
 };
+
+const AdminUsersPage = () => (
+  <Suspense fallback={<DashboardPageFallback />}>
+    <AdminUsersContent />
+  </Suspense>
+);
+
+const DashboardPageFallback = () => (
+  <div className="flex h-[60vh] items-center justify-center p-8">
+    <div className="size-8 animate-spin rounded-full border-4 border-slate-200 border-t-[#e31824]" />
+  </div>
+);
 
 export default AdminUsersPage;

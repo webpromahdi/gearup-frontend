@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Search, PackageOpen } from "lucide-react";
@@ -68,7 +69,7 @@ const getActionLabel = (status: ProviderOrder["status"]) => {
   return "View";
 };
 
-const ProviderOrdersPage = () => {
+const ProviderOrdersContent = () => {
   const {
     localSearch,
     handleSearchChange,
@@ -248,5 +249,17 @@ const ProviderOrdersPage = () => {
     </div>
   );
 };
+
+const ProviderOrdersPage = () => (
+  <Suspense fallback={<DashboardPageFallback />}>
+    <ProviderOrdersContent />
+  </Suspense>
+);
+
+const DashboardPageFallback = () => (
+  <div className="flex h-[60vh] items-center justify-center p-8">
+    <div className="size-8 animate-spin rounded-full border-4 border-slate-200 border-t-[#e31824]" />
+  </div>
+);
 
 export default ProviderOrdersPage;

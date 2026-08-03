@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Search, Mountain } from "lucide-react";
@@ -25,7 +26,7 @@ const formatDate = (dateStr: string) =>
     year: "numeric",
   });
 
-const AdminGearPage = () => {
+const AdminGearContent = () => {
   const { localSearch, handleSearchChange, searchTerm, handleFilterChange, searchParams } = useSearchAndSort();
   const categoryFilter = searchParams.get("category") || "All";
 
@@ -176,5 +177,17 @@ const AdminGearPage = () => {
     </div>
   );
 };
+
+const AdminGearPage = () => (
+  <Suspense fallback={<DashboardPageFallback />}>
+    <AdminGearContent />
+  </Suspense>
+);
+
+const DashboardPageFallback = () => (
+  <div className="flex h-[60vh] items-center justify-center p-8">
+    <div className="size-8 animate-spin rounded-full border-4 border-slate-200 border-t-[#e31824]" />
+  </div>
+);
 
 export default AdminGearPage;

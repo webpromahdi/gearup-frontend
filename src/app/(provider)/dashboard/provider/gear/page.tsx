@@ -1,4 +1,5 @@
 "use client";
+import { Suspense } from "react";
 import { useMemo } from "react";
 import { Search, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import GearTable, { GearItem } from "@/app/(provider)/_components/GearTable";
@@ -21,7 +22,7 @@ import { usePagination } from "@/app/hooks/usePagination";
 
 const PAGE_SIZE = 5;
 
-const ProviderGearPage = () => {
+const ProviderGearContent = () => {
   const { data } = useQuery({
     queryKey: ["provider-gear"],
     queryFn: getProviderGearAction,
@@ -142,5 +143,17 @@ const ProviderGearPage = () => {
     </div>
   );
 };
+
+const ProviderGearPage = () => (
+  <Suspense fallback={<DashboardPageFallback />}>
+    <ProviderGearContent />
+  </Suspense>
+);
+
+const DashboardPageFallback = () => (
+  <div className="flex h-[60vh] items-center justify-center p-8">
+    <div className="size-8 animate-spin rounded-full border-4 border-slate-200 border-t-[#e31824]" />
+  </div>
+);
 
 export default ProviderGearPage;

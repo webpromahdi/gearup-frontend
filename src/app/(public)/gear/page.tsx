@@ -4,6 +4,7 @@ import {
   ListFilter,
   Filter,
 } from "lucide-react";
+import { Suspense } from "react";
 import BrowseCard from "@/components/shared/BrowseCard";
 import {
   Sheet,
@@ -115,7 +116,9 @@ export default async function GearBrowsePage({
                 Filters
               </h2>
             </div>
-            <GearFilters categories={categories} />
+            <Suspense fallback={null}>
+              <GearFilters categories={categories} />
+            </Suspense>
           </aside>
 
           <section>
@@ -143,7 +146,9 @@ export default async function GearBrowsePage({
                       </SheetTitle>
                     </SheetHeader>
                     <div className="flex-1 overflow-y-auto px-5 pb-6 pt-4">
-                      <GearFilters categories={categories} hideApplyButton />
+                      <Suspense fallback={null}>
+                        <GearFilters categories={categories} hideApplyButton />
+                      </Suspense>
                     </div>
                     <div className="sticky bottom-0 z-10 w-full shrink-0 border-t border-slate-100 bg-white p-5 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
                       <SheetClose className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#e31824] text-sm font-bold text-white shadow-md transition hover:bg-[#c41520]">
@@ -154,7 +159,9 @@ export default async function GearBrowsePage({
                   </SheetContent>
                 </Sheet>
 
-                <SortDropdown className="flex-1 min-w-0" />
+                <Suspense fallback={null}>
+                  <SortDropdown className="flex-1 min-w-0" />
+                </Suspense>
               </div>
 
               <div className="flex items-center justify-between">
@@ -167,7 +174,9 @@ export default async function GearBrowsePage({
 
               {activeFiltersCount > 0 && (
                 <div className="scrollbar-none flex items-center gap-2 overflow-x-auto border-t border-slate-100 pt-4">
-                  <ActiveFilters categories={categories} />
+                  <Suspense fallback={null}>
+                    <ActiveFilters categories={categories} />
+                  </Suspense>
                 </div>
               )}
             </div>
@@ -180,12 +189,16 @@ export default async function GearBrowsePage({
                   results for{" "}
                   <span className="font-bold text-[#1b2748]">“All Gear”</span>
                 </p>
-                <SortDropdown className="w-48" />
+                <Suspense fallback={null}>
+                  <SortDropdown className="w-48" />
+                </Suspense>
               </div>
 
               {activeFiltersCount > 0 && (
                 <div className="scrollbar-none flex items-center gap-2 overflow-x-auto border-t border-slate-100 pt-4">
-                  <ActiveFilters categories={categories} />
+                  <Suspense fallback={null}>
+                    <ActiveFilters categories={categories} />
+                  </Suspense>
                 </div>
               )}
             </div>
@@ -199,13 +212,17 @@ export default async function GearBrowsePage({
                   results for{" "}
                   <span className="font-bold text-[#1b2748]">“All Gear”</span>
                 </p>
-                <SortDropdown className="w-48" />
+                <Suspense fallback={null}>
+                  <SortDropdown className="w-48" />
+                </Suspense>
               </div>
 
               {/* Bottom Row */}
               {activeFiltersCount > 0 && (
                 <div className="flex items-center border-t border-slate-100 pt-4">
-                  <ActiveFilters categories={categories} />
+                  <Suspense fallback={null}>
+                    <ActiveFilters categories={categories} />
+                  </Suspense>
                 </div>
               )}
             </div>
@@ -223,7 +240,9 @@ export default async function GearBrowsePage({
             </div>
 
             {totalPages > 1 && (
-              <Pagination page={currentPage} totalPages={totalPages} />
+              <Suspense fallback={null}>
+                <Pagination page={currentPage} totalPages={totalPages} />
+              </Suspense>
             )}
           </section>
         </div>
