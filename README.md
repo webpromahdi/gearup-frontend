@@ -1,29 +1,127 @@
+# 🏕️ GearUp - Sports & Outdoor Gear Rental
+
+**GearUp** is a full-stack gear rental application that connects outdoor enthusiasts with equipment providers. It covers the complete rental workflow, from browsing and booking gear to payment processing, inventory management, and rental tracking.
+
+This repository contains the frontend application, built with Next.js App Router and React Query, focusing on a responsive, role-based user interface.
+
+🔗 **Live Demo:** [https://gearup-frontend-nine.vercel.app/](https://gearup-frontend-nine.vercel.app/)
+
+---
+
+## 📑 Table of Contents
+
+- [Key Features](#-key-features)
+- [Technology Stack](#️-technology-stack)
+- [Project Structure](#-project-structure)
+- [Getting Started (Local Development)](#-getting-started-local-development)
+- [Frontend Routes & API Integration](#-frontend-routes--api-integration)
+- [Security & Architecture Notes](#-security--architecture-notes)
+
+---
+
+## ✨ Key Features
+
+- **Role-Based Dashboards:** Dedicated, secure interfaces for **Customers** (to track rentals & payments), **Providers** (to manage gear inventory & incoming orders), and **Admins** (to moderate users, gear, and categories).
+- **Dynamic Gear Marketplace:** Real-time search, category filtering, and sorting (by price, condition, popularity) to help users find exactly what they need.
+- **Seamless Booking & Payments:** Integrated with **Stripe** for secure, automated payments. The platform processes transactions natively in **BDT (৳)**.
+- **Automated Stock Management:** Real-time stock deduction upon successful payment and automatic restoration when gear is returned.
+- **Review & Rating System:** Only customers with completed rentals can submit ratings and reviews.
+
+---
+
+## 🛠️ Technology Stack
+
+- **Framework:** [Next.js (App Router)](https://nextjs.org/)
+- **Library:** [React](https://react.dev/)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/) & [shadcn/ui](https://ui.shadcn.com/) components
+- **State Management & Data Fetching:** [TanStack Query (React Query)](https://tanstack.com/query/latest) & Next.js Server Actions
+- **Forms & Validation:** [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+- **Icons & Notifications:** [Lucide React](https://lucide.dev/) & [Sonner](https://sonner.emilkowal.ski/)
+- **Authentication:** JSON Web Tokens (JWT) & `httpOnly` Cookies
+
+---
+
+## 📂 Project Structure
+
+```text
+gearup-frontend/
+├── src/
+│   ├── app/                 # Next.js App Router root
+│   │   ├── (admin)/         # Admin dashboard routes & actions
+│   │   ├── (auth)/          # Authentication routes (login, register)
+│   │   ├── (customer)/      # Customer dashboard & rental logic
+│   │   ├── (payment)/       # Payment success/cancel pages
+│   │   ├── (provider)/      # Provider dashboard & inventory management
+│   │   ├── (public)/        # Public-facing pages (home, gear browse)
+│   │   ├── api/             # Next.js API Routes (Proxy)
+│   │   └── services/        # Centralized API service functions
+│   ├── components/          # Reusable React components (UI, shared)
+│   ├── lib/                 # Utility libraries (QueryClient, API configs)
+│   └── utils/               # Helper functions
+├── public/                  # Static assets
+└── tailwind.config.ts       # Tailwind CSS configuration
+```
+
+---
+
+## 🚀 Getting Started (Local Development)
+
+Follow these steps to run the frontend application locally on your machine.
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+- A running instance of the GearUp Backend server.
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/webpromahdi/gearup-frontend.git
+cd gearup-frontend
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Environment Variables
+
+Create a `.env` file in the root directory and configure the required variables. Use the `.env.example` file as a reference.
+
+```env
+# The URL of your running GearUp backend API
+BACKEND_API_URL=http://localhost:5000
+```
+
+### 4. Run the development server
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
+
+---
+
 ## 🌐 Frontend Routes & API Integration
 
-The frontend consumes the GearUp Backend REST API and provides a role-based user experience for Customers, Providers, and Admins.
+The frontend consumes the GearUp Backend REST API and provides a structured routing system. Authentication is handled securely via `httpOnly` cookies (`accessToken`).
 
-| Frontend Route | Feature | Backend API |
-|----------------|---------|-------------|
-| `/` | Home page (Featured Gear) | `GET /api/gear` |
-| `/gear` | Browse gear, search & filter | `GET /api/gear` `GET /api/categories` |
-| `/gear/[id]` | Gear details | `GET /api/gear/:id` |
-| `/login` | User login | `POST /api/auth/login` |
-| `/register` | User registration | `POST /api/auth/register` |
-| `/profile` | Current user profile | `GET /api/auth/me` |
-| `/dashboard/customer` | Customer dashboard | `GET /api/rentals` `GET /api/payments` |
-| `/dashboard/customer/rentals/[id]` | Rental details | `GET /api/rentals/:id` |
-| `/dashboard/customer/payment/[id]` | Payment page | `POST /api/payments/create` |
-| `/dashboard/customer/reviews` | Customer reviews | `GET /api/reviews` `POST /api/reviews` |
-| `/dashboard/provider` | Provider dashboard | `GET /api/provider/gear` `GET /api/provider/orders` |
-| `/dashboard/provider/gear` | Provider gear list | `GET /api/provider/gear` |
-| `/dashboard/provider/gear/new` | Add new gear | `POST /api/provider/gear` |
-| `/dashboard/provider/gear/[id]/edit` | Update gear | `PUT /api/provider/gear/:id` |
-| `/dashboard/provider/orders` | Incoming rental orders | `GET /api/provider/orders` |
-| `/dashboard/provider/orders/[id]` | Order details & status update | `GET /api/provider/orders/:id` `PATCH /api/provider/orders/:id` |
-| `/dashboard/admin` | Admin dashboard | `GET /api/admin/users` `GET /api/admin/gear` `GET /api/admin/rentals` |
-| `/dashboard/admin/users` | User management | `GET /api/admin/users` `PATCH /api/admin/users/:id` |
-| `/dashboard/admin/categories` | Category management | `GET /api/categories` `POST /api/categories` `PUT /api/categories/:id` `DELETE /api/categories/:id` |
-| `/dashboard/admin/gear` | Gear moderation | `GET /api/admin/gear` |
-| `/dashboard/admin/rentals` | Rental management | `GET /api/admin/rentals` |
-| `/payment/success` | Stripe payment success | Stripe Checkout Redirect |
-| `/payment/cancel` | Stripe payment cancelled | Stripe Checkout Redirect |
+For a complete and detailed list of all frontend routes, backend endpoints, and their respective integrations, please refer to the [API Integration Documentation](API_INTEGRATION.md).
+
+---
+
+## 🔒 Security & Architecture Notes
+
+- **Server Actions:** Sensitive data fetching and mutations are securely handled server-side using Next.js Server Actions.
+- **Idempotency:** Payment endpoints check transaction statuses before deducting stock to prevent double-charging or inaccurate inventory.
+- **Caching Strategy:** `TanStack Query` is heavily utilized on the client-side for immediate UI updates, cache invalidation, and seamless dashboard interactions.
+- **Protected Routes:** Next.js middleware is used to verify authentication cookies and authorize route access before rendering pages, preventing unauthorized access to dashboards.
+
+---
+
+Built with ❤️ using Next.js, TypeScript, and modern web technologies.
